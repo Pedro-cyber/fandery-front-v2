@@ -1,0 +1,25 @@
+<!-- 🔽 Botones de orden -->
+<div class="button-toggle my-3">
+  <span>Ordenar por: </span>
+  <button class="btn me-1"
+        [class.active]="sortOrder === 'discountDesc'"
+        (click)="setSort('discountDesc')">
+  Descuento ↓
+  </button>
+  <button class="btn me-1"
+  [class.active]="sortOrder === 'discountAsc'"
+  (click)="setSort('discountAsc')">
+  Descuento ↑
+  </button>
+  <button class="btn me-1"
+          [class.active]="sortOrder === 'priceDesc'"
+          (click)="setSort('priceDesc')">
+    Precio ↓
+  </button>
+  <button class="btn me-1"
+          [class.active]="sortOrder === 'priceAsc'"
+          (click)="setSort('priceAsc')">
+    Precio ↑
+  </button>
+</div>
+<!-- 🔼 Botones de orden -->

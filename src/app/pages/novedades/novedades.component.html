@@ -1,0 +1,69 @@
+<div class="main-container">
+  <app-header></app-header>
+  <main>
+    <h2>Novedades</h2>
+
+    <div class="mb-3">
+
+      <!-- Botón solo visible en móvil -->
+      <div class="d-md-none">
+        <button class="btn w-100 d-flex justify-content-between align-items-center"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sortFilterCollapse"
+                aria-expanded="false"
+                aria-controls="sortFilterCollapse">
+          <span><strong>Filtros y orden</strong></span>
+          <i class="fa fa-chevron-down"></i>
+        </button>
+      </div>
+
+      <div id="sortFilterCollapse" class="collapse d-md-block mt-2">
+        <div class="sort-filter-block">
+          <app-filter-toggle
+            [filter]="filter"
+            (filterChange)="setFilter($event)">
+          </app-filter-toggle>
+
+          <app-sort-buttons
+          [sortOrder]="sortOrder"
+          (sortChange)="setSortOrder($event)">
+          </app-sort-buttons>
+        </div>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 gy-2">
+      <div class="col" *ngFor="let newProduct of productosPaginados">
+        <app-product-card [product]="newProduct"></app-product-card>
+      </div>
+    </div>
+    <app-paginator
+    *ngIf="productosFiltrados.length > 0"
+    [currentPage]="currentPage"
+    [pageSize]="pageSize"
+    [totalItems]="productosFiltrados.length"
+    (pageChange)="onPageChange($event)">
+    </app-paginator>
+    <section class="seo-text">
+      <h1>Novedades LEGO 2025: descubre los últimos lanzamientos</h1>
+      <p>¿Buscas los <strong>nuevos sets de LEGO</strong> que acaban de llegar al mercado? En <strong>Fandery</strong> reunimos todas las <strong>novedades LEGO</strong> en un solo lugar para que no te pierdas ningún lanzamiento. Encuentra los sets más recientes de tus líneas favoritas —como <strong>LEGO Star Wars</strong>, <strong>LEGO Ideas</strong>, <strong>LEGO Icons</strong> o <strong>LEGO Harry Potter</strong>— y <strong>compara precios</strong> entre las principales tiendas antes de comprar.</p>
+
+      <h2>Explora las últimas novedades y lanzamientos de LEGO</h2>
+      <p>Cada mes, LEGO lanza nuevos sets que amplían sus colecciones más populares y presentan ideas originales para constructores de todas las edades. Desde <em>vehículos clásicos y edificios icónicos</em> hasta <em>sets coleccionables de cine y televisión</em>, aquí encontrarás todas las <strong>novedades LEGO 2025</strong> actualizadas al momento.</p>
+
+      <h2>Compara precios y encuentra la mejor oferta</h2>
+      <p>Gracias a nuestro comparador de precios, puedes ver de un vistazo cuánto cuesta cada set en diferentes tiendas. Así eliges siempre la <strong>mejor oferta LEGO</strong> sin tener que buscar en mil sitios. Fandery analiza precios, disponibilidad y promociones en plataformas como Amazon, El Corte Inglés, Zavvi, LEGO.com y muchas más.</p>
+
+      <h2>Actualizamos las novedades constantemente</h2>
+      <p>Nuestra base de datos se actualiza de forma continua para que siempre tengas acceso a los <strong>últimos lanzamientos LEGO</strong>. Guarda esta página en tus favoritos y vuelve a menudo: aquí verás los <strong>nuevos sets LEGO</strong> en cuanto salgan al mercado.</p>
+
+      <h2>Encuentra inspiración para tu próxima construcción</h2>
+      <p>Explora las novedades por tema, edad o tipo de set, descubre las creaciones más recientes y déjate inspirar para tu próxima construcción. Ya seas coleccionista o simplemente amante de LEGO, en Fandery tienes todo lo que necesitas para estar al día del universo LEGO.</p>
+
+      <p><strong>Fandery: tu comparador de precios LEGO y punto de encuentro para coleccionistas.</strong></p>
+    </section>
+
+  </main>
+
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,126 @@
+
+<div class="main-container">
+  <app-header></app-header>
+
+  <main>
+
+    <div class="featured-products">
+      <div class="row">
+        <div class="col-12">
+          <h2>Destacados</h2>
+          <app-featured-products [featuredProducts]="featured"></app-featured-products>
+        </div>
+      </div>
+    </div>
+    <swiper
+    [slidesPerView]="8"
+    [spaceBetween]="5"
+    [loop]="false"
+    [autoplay]="{ delay: 0, disableOnInteraction: false }"
+    [speed]="3000"
+    [preloadImages]="false"
+    [lazy]="{ loadPrevNext: true }"
+    [breakpoints]="{
+      '1300': { slidesPerView: 8, spaceBetween: 5 },
+      '992': { slidesPerView: 6, spaceBetween: 5 },
+      '768': { slidesPerView: 4, spaceBetween: 1 },
+      '0':   { slidesPerView: 2, spaceBetween: 1 }
+    }"
+    class="themes-carousel"
+  >
+  <ng-template swiperSlide *ngFor="let theme of filteredThemes; let i = index">
+    <div class="theme-item">
+      <a [routerLink]="['/product-list']" [queryParams]="{ theme: theme._id }">
+        <img
+          [src]="i < 9 ? themeImages[theme._id] : null"
+          [attr.data-src]="i >= 9 ? themeImages[theme._id] : null"
+          class="swiper-lazy"
+          [alt]="theme._id"
+          width="160"
+          height="260"
+        />
+        <div *ngIf="i >= 9" class="swiper-lazy-preloader"></div>
+      </a>
+    </div>
+  </ng-template>
+  </swiper>
+
+  <a class="d-lg-none home-button-container" [routerLink]="['/categorias']">
+    <div class="home-button">
+      Todas las categorías
+    </div>
+</a>
+
+
+    <div class="features">
+      <section class="deals-section">
+        <h2>Mejores ofertas</h2>
+        <app-best-deals [deals]="bestDeals"></app-best-deals>
+      </section>
+      <a class="d-lg-none home-button-container" [routerLink]="['/ofertas']">
+        <div class="home-button">
+          Todas las ofertas
+        </div>
+    </a>
+      <section class="promo-section">
+        <h2>Promociones</h2>
+         <app-promo-list [promos]="promos"></app-promo-list>
+      </section>
+    </div>
+
+  </main>
+
+  <section class="seo-text container">
+    <h2>Encuentra las mejores ofertas de LEGO y compara precios con Fandery</h2>
+    <p>En <strong>Fandery</strong> reunimos las mejores <strong>ofertas de LEGO</strong> para que puedas <strong>comparar precios entre distintas tiendas online</strong> y encontrar tus sets favoritos al mejor precio. Nuestro comparador analiza a diario tiendas como LEGO.com, Amazon, El Corte Ingl&eacute;s, Miravia, ToysRus o Abacus, mostr&aacute;ndote en un solo lugar las opciones m&aacute;s baratas y actualizadas.</p>
+    <p>Si eres fan de <strong>LEGO Star Wars</strong>, <strong>Harry Potter</strong>, <strong>Ideas</strong> o <strong>Technic</strong>, aqu&iacute; podr&aacute;s descubrir f&aacute;cilmente d&oacute;nde comprar cada set con descuento. Tambi&eacute;n puedes filtrar por categor&iacute;a, nombre o n&uacute;mero de set para no perderte ninguna oportunidad.</p>
+    <h3>Tu aliado para comprar LEGO m&aacute;s barato</h3>
+    <p>Gracias a nuestro <em>comparador de precios LEGO</em>, ahorrar en tus compras nunca hab&iacute;a sido tan sencillo. Fandery actualiza los precios constantemente, mostrando en primer lugar las tiendas con mejor oferta disponible.</p>
+    <ul>
+    <li>Compara precios en m&uacute;ltiples tiendas oficiales y especializadas.</li>
+    <li>Encuentra <strong>descuentos LEGO</strong> reales y verificados.</li>
+    <li>Consulta el hist&oacute;rico de precios y detecta aut&eacute;nticos chollos.</li>
+    </ul>
+    <h3>Ofertas LEGO actualizadas cada d&iacute;a</h3>
+    <p>Nuestro objetivo es ayudarte a <strong>comprar LEGO m&aacute;s barato</strong> y sin complicaciones. Cada d&iacute;a rastreamos miles de productos para ofrecerte un listado fiable y transparente de las mejores ofertas LEGO del momento. As&iacute; podr&aacute;s decidir d&oacute;nde comprar con total confianza y aprovechar cada promoci&oacute;n antes de que se agote.</p>
+    <p>Fandery no vende directamente los productos: actuamos como un <strong>buscador de ofertas LEGO</strong> que te redirige a tiendas oficiales y marketplaces de confianza. Cuando compras a trav&eacute;s de nuestros enlaces, puede que recibamos una peque&ntilde;a comisi&oacute;n de afiliaci&oacute;n, pero el precio para ti no cambia.</p>
+    <h3>Explora, compara y ahorra con Fandery</h3>
+    <p>Tanto si buscas un set cl&aacute;sico, una <a href="/novedades">novedad</a> de <a href="/product-list?theme=Icons">LEGO Icons</a> o una edici&oacute;n exclusiva, <strong>Fandery</strong> es la herramienta ideal para comparar precios, descubrir descuentos y ahorrar en cada compra. Empieza hoy mismo y convi&eacute;rtete en un verdadero cazador de ofertas LEGO.</p>
+    <!-- ====== FAQ SEO SECTION ====== -->
+    <section class="faq">
+    <h2>Preguntas frecuentes sobre Fandery</h2>
+    <div>
+    <h3>&iquest;Qu&eacute; es Fandery?</h3>
+    <div>
+    <p>Fandery es una plataforma que compara precios de <strong>sets LEGO</strong> en distintas tiendas online. Te permite ver d&oacute;nde comprar m&aacute;s barato y qu&eacute; ofertas est&aacute;n activas en tiempo real.</p>
+    </div>
+    </div>
+    <div>
+    <h3>&iquest;Las ofertas de LEGO est&aacute;n actualizadas?</h3>
+    <div>
+    <p>S&iacute;, los precios se actualizan con frecuencia para mostrar siempre la informaci&oacute;n m&aacute;s reciente de las tiendas asociadas, evitando ofertas caducadas o sin stock.</p>
+    </div>
+    </div>
+    <div>
+    <h3>&iquest;Puedo comprar directamente en Fandery?</h3>
+    <div>
+    <p>No, Fandery no vende productos directamente. Actuamos como un comparador que te redirige a tiendas oficiales o marketplaces donde puedes completar tu compra con total seguridad.</p>
+    </div>
+    </div>
+    <div>
+    <h3>&iquest;C&oacute;mo gana dinero Fandery?</h3>
+    <div>
+    <p>Fandery participa en programas de afiliaci&oacute;n. Cuando compras a trav&eacute;s de nuestros enlaces, podemos recibir una peque&ntilde;a comisi&oacute;n, pero el precio para ti no cambia.</p>
+    </div>
+    </div>
+    <div>
+    <h3>&iquest;Qu&eacute; tiendas compara Fandery?</h3>
+    <div>
+    <p>Fandery analiza precios de tiendas como LEGO.com, Amazon, El Corte Ingl&eacute;s, ToysRus, Abacus, Miravia y otras tiendas especializadas en LEGO.</p>
+    </div>
+    </div>
+    </section>
+    </section>
+</div>
+
+<app-footer></app-footer>

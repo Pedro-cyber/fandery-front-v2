@@ -1,0 +1,22 @@
+<div class="product-detail-analytics">
+  <div class="currentPrice" *ngIf="primerPrecio !== null">
+    <span class="label">Precio actual</span>
+    <span class="value">{{ primerPrecio | number:'1.2-2' }} €</span>
+  </div>
+  <div class="legoPrice">
+    <span class="label">Precio venta lanzamiento</span>
+    <span class="value">{{ product.price | number:'1.2-2' }} €</span>
+  </div>
+  <div class="minHistoricalPrice">
+    <span class="label">Precio mínimo histórico</span>
+    <span class="value">{{ product.minHistoricalPrice | number:'1.2-2' }} €</span>
+  </div>
+  <div class="maxHistoricalPrice">
+    <span class="label">Precio máximo histórico</span>
+    <span class="value">{{ product.maxHistoricalPrice | number:'1.2-2' }} €</span>
+  </div>
+</div>
+
+<div class="price-chart">
+  <canvas #priceChart></canvas>
+</div>

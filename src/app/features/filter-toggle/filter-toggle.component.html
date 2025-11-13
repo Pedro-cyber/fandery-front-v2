@@ -1,0 +1,17 @@
+<div class="button-toggle">
+  <span>Mostrar: </span>
+  <button
+    [class.active]="filter === 'all'"
+    (click)="setFilter('all')"
+    type="button"
+    class="btn">
+    Todo
+  </button>
+  <button
+    [class.active]="filter === 'offers'"
+    (click)="setFilter('offers')"
+    type="button"
+    class="btn">
+    Solo ofertas
+  </button>
+</div>

@@ -1,0 +1,152 @@
+header {
+  width: 100%;
+  margin: 0 auto;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff;
+}
+
+.header-block {
+  display: flex;
+  align-items: center;
+}
+
+.logo-section {
+  width: 80%;
+}
+
+.logo-section img {
+  width: 80%;
+  object-fit: contain;
+}
+
+
+@media (min-width: 1024px) {
+  header {
+    width: 80%;
+    position: unset;
+  }
+
+  header .logo-section {
+    width: 50%;
+  }
+
+  .logo-section img {
+    width: 50%;
+  }
+}
+
+.nav-menu {
+  display: none;
+
+  a, .search-box {
+    flex: 1 1 45%;
+    text-align: center;
+  }
+
+  .search-box {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  a {
+    padding: 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .logo-section {
+    width: 50%;
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: black;
+    gap: 1.5rem;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+
+    a, .search-box {
+      flex: unset;
+    }
+
+    .search-box {
+      max-width: 250px;
+    }
+
+    a {
+      padding: 0;
+    }
+  }
+}
+
+.hamburger {
+  margin: 20px;
+  height: 50px;
+  width: 50px;
+  border-radius: 12px;
+  color: white;
+  background-color: black;
+  font-size: 1.5rem;
+  z-index: 1200;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+@media (min-width: 767px) {
+  .hamburger {
+    display: none;
+  }
+}
+
+
+.mobile-menu {
+  position: fixed;
+  top: 87px;
+  left: -100%;
+  width: 100%;
+  height: calc(100vh - 87px);
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  transition: left 0.3s ease-in-out;
+  z-index: 1100;
+  overflow-y: auto;
+}
+
+.mobile-menu.open {
+  left: 0;
+}
+
+.mobile-menu .search-box {
+  margin-bottom: 20px;
+}
+
+.mobile-menu a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mobile-menu .social-icons {
+  margin-top: 10vh;
+    i.fab {
+      font-size: 2rem;
+    }
+}

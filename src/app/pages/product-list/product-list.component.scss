@@ -1,0 +1,27 @@
+
+@media (min-width: 1024px) {
+  .sort-filter-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Rotación del icono cuando el collapse está abierto */
+button[aria-expanded="true"] .fa-chevron-down {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+button[aria-expanded="false"] .fa-chevron-down {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.btn:first-child:active {
+  border-color: white;
+}
+
+button.btn {
+  border-bottom: 1px solid grey;
+}

@@ -1,0 +1,106 @@
+.precios-container {
+  margin: 10px 10px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.precio-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.precio-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.store-info {
+  display: flex;
+  align-items: center;
+}
+
+.store-logo {
+  width: 130px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.price-info {
+  text-align: right;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.descuento {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.precio-card:hover {
+  transform: scale(1.02);
+}
+
+.afiliado-aviso {
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.afiliado-aviso a {
+  text-decoration: none;
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.historic-info {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  background-color: #ffc107;
+  text-align: center;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.min-historic {
+  border: 2px solid #ffc107;
+}
+
+.cart-advertising {
+  border: 1px solid #ccc;
+  font-size: 0.7rem;
+  border-top-left-radius: 8px;
+  color: black;
+  padding: 0.1rem 0.4rem;
+  margin-left: 15px;
+}
+
+.cart-advertising .fa-circle-info {
+  color: #ffc107;
+  width: 20px;
+  font-size: 16px;
+}
+
+.goToStore {
+  background-color: #ffc107;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 0.2rem 0.4rem;
+}

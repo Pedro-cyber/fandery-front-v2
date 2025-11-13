@@ -1,0 +1,25 @@
+<div class="card" [ngClass]="{'card-minimo-historico': isMinHistoric(product)}" *ngIf="product" (click)="goToDetail()">
+
+  <span class="historic-info" *ngIf="isMinHistoric(product)">Precio mínimo</span>
+
+  <img class="image" [src]="product.thumbnail" [alt]="product.name_es || product.name" />
+
+  <div class="title-container" style="height: 3rem;">
+    <p class="title">{{ product.name_es || product.name }}</p>
+  </div>
+
+  <p class="price">
+    <!-- ✅ Ahora Angular ya no evalúa undefined en el template -->
+    <ng-container *ngIf="hasDiscount(product); else sinDescuento">
+      <span class="price-final">{{ product.mejorPrecio | number:'1.2-2' }} €</span>
+      <span class="price-original">{{ product.priceOriginal | number:'1.2-2' }} €</span>
+      <span class="discount">-{{ product.descuento | number:'1.0-0' }}%</span>
+    </ng-container>
+
+    <ng-template #sinDescuento>
+      <span class="price-final-no-offer">
+        {{ product?.mejorPrecio || product?.priceOriginal | number:'1.2-2' }} €
+      </span>
+    </ng-template>
+  </p>
+</div>

@@ -1,0 +1,59 @@
+<div class="main-container">
+  <app-header></app-header>
+  <main>
+    <ng-container *ngIf="product">
+      <div class="main-product-container">
+        <!-- ✅ Theme -->
+      <div class="theme">
+        <ng-container *ngIf="themeImages[product.theme]; else showThemeName">
+          <img [src]="themeImages[product.theme]" [alt]="product.theme">
+        </ng-container>
+        <ng-template #showThemeName>
+          <span class="theme-name">{{ product.theme }}</span>
+        </ng-template>
+      </div>
+
+      <!-- ✅ Nombre del set -->
+      <div class="name">
+        <h2>{{ product.name_es || product.name }} ({{ product.legoId }})</h2>
+      </div>
+
+      <div class="product-detail-container">
+        <div class="row align-items-start">
+          <div class="col-12 col-md-7 d-flex justify-content-center">
+            <img class="product-image img-fluid" [src]="product.image" [alt]="product.name_es || product.name" />
+          </div>
+          <section class="col-12 col-md-5 description-block">
+
+            <button
+              class="btn btn-link d-md-none d-flex justify-content-between align-items-center w-100"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#descriptionCollapse"
+              aria-expanded="false"
+              aria-controls="descriptionCollapse">
+              <span>Descripción</span>
+              <i class="fa fa-chevron-down"></i>
+            </button>
+
+
+            <div class="collapse d-md-block" id="descriptionCollapse">
+              <app-product-detail-description [product]="product"></app-product-detail-description>
+            </div>
+          </section>
+
+        </div>
+        <div class="row">
+          <section class="col-12 col-md-6 analytics-block">
+            <app-product-detail-analytics [product]="product" [historicalData]="historicalData"></app-product-detail-analytics>
+          </section>
+          <div class="col-12 col-md-6 prices-block">
+            <app-product-detail-prices [product]="product"></app-product-detail-prices>
+          </div>
+        </div>
+      </div>
+  </div>
+  </ng-container>
+  </main>
+  <app-footer></app-footer>
+</div>

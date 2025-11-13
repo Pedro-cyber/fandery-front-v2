@@ -1,0 +1,43 @@
+footer {
+  width: 100%;
+  margin: 0 auto;
+  background-color: white;
+}
+
+@media (min-width: 1024px) {
+  footer {
+    width: 80%;
+  }
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 1rem 0 1rem 0;
+  padding-top: 1rem;
+}
+
+.about-link {
+  text-decoration: none;
+  color:  black;
+  font-weight: bold;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+
+  i {
+    font-size: 2rem; // Aumenta el tamaño del icono
+    color: black;  // Aplica el color rojo
+    transition: color 0.3s;
+  }
+}
+
+.text-legal p {
+  color: grey;
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  padding: 0 10vw;
+}

@@ -1,0 +1,47 @@
+<header>
+
+<div class="header-block">
+
+    <!-- Icono hamburguesa -->
+    <button class="hamburger"  (click)="toggleMenu()">
+      <i class="fas" [ngClass]="menuOpen ? 'fa-times' : 'fa-bars'"></i>
+    </button>
+
+    <div class="logo-section">
+      <a routerLink="/">
+        <img src="assets/logo2.png" alt="Fandery" />
+     </a>
+    </div>
+
+</div>
+
+  <!-- Menú normal -->
+  <nav class="nav-menu" >
+    <a routerLink="/novedades">Novedades</a>
+    <a routerLink="/ofertas">Ofertas</a>
+    <a routerLink="/promociones">Promociones</a>
+    <a routerLink="/categorias">Categorías</a>
+    <div class="search-box">
+      <app-search-bar></app-search-bar>
+    </div>
+  </nav>
+
+  <!-- Menú móvil -->
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <div class="search-box">
+      <app-search-bar></app-search-bar>
+    </div>
+    <a routerLink="/novedades" (click)="closeMenu()">Novedades</a>
+    <a routerLink="/ofertas" (click)="closeMenu()">Ofertas</a>
+    <a routerLink="/promociones" (click)="closeMenu()">Promociones</a>
+    <a routerLink="/categorias" (click)="closeMenu()">Categorías</a>
+    <div class="social-icons">
+      <a href="https://t.me/ofertasdelego" target="_blank" rel="noopener" aria-label="Telegram">
+        <i class="fab fa-telegram"></i>
+      </a>
+      <a href="https://whatsapp.com/channel/0029VbB3NJ3HbFV8JJOw9z1c" target="_blank" rel="noopener" aria-label="Whatsapp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+  </div>
+</header>

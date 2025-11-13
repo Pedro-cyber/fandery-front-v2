@@ -1,0 +1,15 @@
+import { Component } from '@angular/core';
+import { LoaderService } from '../../services/loader.service';
+
+@Component({
+  selector: 'app-spinner',
+  templateUrl: './spinner.component.html',
+  styleUrls: ['./spinner.component.scss']
+})
+export class SpinnerComponent   {
+
+    isLoading = this.loaderService.loading$;
+    constructor(private loaderService: LoaderService) {}
+
+
+}

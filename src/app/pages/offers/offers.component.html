@@ -1,0 +1,83 @@
+<div class="main-container">
+  <app-header></app-header>
+  <main>
+    <h2>Ofertas</h2>
+
+    <div class="mb-3">
+      <!-- Botón solo visible en móvil -->
+      <div class="d-md-none">
+        <button class="btn w-100 d-flex justify-content-between align-items-center"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sortFilterCollapse"
+                aria-expanded="false"
+                aria-controls="sortFilterCollapse">
+          <span><strong>Orden</strong></span>
+          <i class="fa fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="sortFilterCollapse" class="collapse d-md-block mt-2">
+        <div class="sort-filter-block">
+          <app-sort-buttons
+          [sortOrder]="sortOrder"
+          (sortChange)="setSortOrder($event)">
+          </app-sort-buttons>
+        </div>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 gy-2">
+      <div class="col" *ngFor="let deal of productosPaginados">
+        <app-product-card [product]="deal"></app-product-card>
+      </div>
+    </div>
+    <app-paginator
+    *ngIf="bestDeals.length > 0"
+    [currentPage]="currentPage"
+    [pageSize]="pageSize"
+    [totalItems]="bestDeals.length"
+    (pageChange)="onPageChange($event)">
+    </app-paginator>
+
+    <section class="seo-text">
+    <h1>Ofertas LEGO 2025: descuentos y chollos actualizados</h1>
+
+  <p>En <strong>Fandery</strong> recopilamos todas las <strong>ofertas LEGO</strong> en un solo lugar para que encuentres los <strong>sets más baratos</strong> y aproveches los mejores descuentos sin perder tiempo buscando. Nuestro comparador analiza precios en tiempo real y te muestra las rebajas activas en las principales tiendas online.</p>
+
+  <h2>Encuentra las mejores ofertas LEGO</h2>
+  <p>Nuestro sistema rastrea las promociones de tiendas como <strong>Amazon</strong>, <strong>LEGO.com</strong>, <strong>Fnac</strong>, <strong>ToysRus</strong> y <strong>El Corte Inglés</strong>, actualizando cada pocas horas los precios y el stock disponible. Así puedes ver de un vistazo qué sets están en rebaja y cuánto puedes ahorrar respecto al precio oficial de LEGO.</p>
+
+  <h2>Filtra y ordena fácilmente</h2>
+  <p>En esta sección puedes <strong>ordenar las ofertas LEGO</strong> por precio y por descuento para ver primero los sets con las mayores bajadas o los más populares entre los coleccionistas.</p>
+
+  <h2>Tipos de descuentos que encontrarás</h2>
+  <ul>
+    <li>Rebajas temporales en sets recientes y coleccionables.</li>
+    <li>Promociones especiales como 2x1 o packs con regalo.</li>
+    <li>Liquidaciones de sets descatalogados o con pocas unidades.</li>
+    <li>Descuentos de temporada: Black Friday, Prime Day o rebajas de verano.</li>
+  </ul>
+
+  <h2>Transparencia y actualización constante</h2>
+  <p>Actualizamos las ofertas varias veces al día para mantener la información siempre al día. Todas las rebajas se contrastan con el <em>PVP oficial</em> de LEGO, evitando falsas ofertas o precios inflados. Solo verás descuentos reales y verificados.</p>
+
+  <h2>Preguntas frecuentes</h2>
+  <h3>¿Cada cuánto se actualizan las ofertas LEGO?</h3>
+  <p>El listado se actualiza automáticamente varias veces al día para mostrar los precios más recientes.</p>
+
+  <h3>¿Qué tiendas comparáis en Fandery?</h3>
+  <p>Comparamos precios entre Amazon, LEGO.com, Fnac, ToysRus, El Corte Inglés y otras tiendas reconocidas de confianza.</p>
+
+  <h3>¿Las ofertas LEGO son reales?</h3>
+  <p>Sí. Verificamos cada descuento y lo comparamos con el precio oficial para mostrarte solo ofertas auténticas.</p>
+
+  <h3>¿Puedo recibir alertas cuando un set baje de precio?</h3>
+  <p>Todavía no, la web actualmente se encuentra en base beta, pero próximamente tendrás disponible esta opción.</p>
+
+  <p><strong>Fandery</strong> es tu punto de referencia para encontrar <strong>ofertas LEGO actualizadas</strong>, comparar precios y ahorrar en tus sets favoritos.</p>
+
+</section>
+
+
+  </main>
+  <app-footer></app-footer>
+</div>

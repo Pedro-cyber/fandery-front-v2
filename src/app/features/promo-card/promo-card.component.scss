@@ -1,0 +1,50 @@
+.title-container {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.promo-card {
+  border: none;
+  padding: 10px;
+  width: 300px;
+}
+
+.promo-card img {
+  width: 300px;
+  height: 325px;
+}
+.url-container a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.promo-status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.promo-status.active {
+  background: #4caf50;
+  color: white;
+}
+
+.promo-status.expired {
+  background: #e53935;
+  color: white;
+}
+
+@media (min-width: 768px) {
+    .promo-card img {
+      width: 375px;
+      height: 315px;
+    }
+
+    .promo-card {
+      width: 375px;
+    }
+
+  }
+

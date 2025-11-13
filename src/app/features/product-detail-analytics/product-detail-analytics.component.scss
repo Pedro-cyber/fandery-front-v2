@@ -1,0 +1,60 @@
+.product-detail-analytics {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.product-detail-analytics > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: black;
+  font-weight: bold;
+}
+
+/* Textos */
+.label {
+  font-size: 1rem;
+}
+
+
+/* Colores por tipo */
+.currentPrice .value {
+ color: #007bff;
+}
+
+.legoPrice .value {
+  color: #ffc107;
+}
+
+.minHistoricalPrice .value {
+  color: #28a745;
+}
+
+.maxHistoricalPrice .value {
+  color: #dc3545;
+}
+
+.price-chart {
+  margin-top: 20px;
+}
+
+@media (min-width: 1024px) {
+  .product-detail-analytics > div {
+    margin: 0.8rem;
+  }
+}
+
+:host {
+  display: block;
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+
+  @media (max-width: 768px) {
+    height: 250px !important;
+  }
+}

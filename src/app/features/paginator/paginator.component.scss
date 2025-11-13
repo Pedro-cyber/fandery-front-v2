@@ -1,0 +1,33 @@
+.pagination-nav {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+
+  button {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+
+    &.active {
+      background: #ffc107;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    &:disabled {
+      font-weight: bold;
+      border: none;
+      cursor: default;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .pagination-nav button {
+    padding: 0.4rem 0.8rem;
+  }
+
+}

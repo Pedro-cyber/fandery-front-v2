@@ -1,0 +1,32 @@
+.button-toggle {
+  .btn {
+    border-radius: 5px;
+    border: 1px solid;
+    font-weight: bold;
+    color: black;
+    transition: background-color 0.3s;
+    margin: 5px;
+    padding: 0.3rem;
+
+    &.active {
+      background-color: #ffc107;
+      color: white;
+      border-color: black;
+      cursor: initial;
+    }
+
+    &.inactive {
+      background-color: white;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+
+  .button-toggle {
+    .btn {
+      padding: 0.375rem 0.75rem;
+    }
+  }
+
+}
