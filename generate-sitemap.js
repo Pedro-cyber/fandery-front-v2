@@ -1,7 +1,6 @@
 import { SitemapStream, streamToPromise } from 'sitemap'
-import { createWriteStream, mkdirSync } from 'fs'
+import { createWriteStream } from 'fs'
 import { MongoClient } from 'mongodb'
-import { resolve, dirname } from 'path'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -19,17 +18,18 @@ const staticRoutes = [
   { url: '/novedades', changefreq: 'weekly', priority: 0.8 }
 ]
 
-// Función slugify
+// 🔹 Función genérica para crear slugs SEO friendly
 function slugify(text) {
   return text
+    .toString()
     .toLowerCase()
-    .normalize("NFD")
+    .normalize("NFD") // elimina acentos
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
 }
 
-// Recuperar productos de MongoDB
+// 🔹 Recuperar productos de MongoDB
 async function getDynamicRoutes() {
   const client = new MongoClient(mongoUri)
   try {
@@ -43,8 +43,9 @@ async function getDynamicRoutes() {
     ).toArray()
 
     return productos.map(p => {
-      const name = p.name_es || p.name
+      const name = p.name_es || p.name || ''
       const slug = slugify(name)
+
       return {
         url: `/sets/${slug}-${p.legoId}`,
         changefreq: 'weekly',
@@ -57,7 +58,7 @@ async function getDynamicRoutes() {
   }
 }
 
-// Recuperar categorías únicas desde MongoDB
+// 🔹 Recuperar categorías únicas desde MongoDB
 async function getCategoryRoutes() {
   const client = new MongoClient(mongoUri)
   try {
@@ -69,11 +70,15 @@ async function getCategoryRoutes() {
 
     return themes
       .filter(Boolean)
-      .map(theme => ({
-        url: `/product-list?theme=${encodeURIComponent(theme)}`,
-        changefreq: 'weekly',
-        priority: 0.7
-      }))
+      .map(theme => {
+        const themeSlug = slugify(theme)
+        return {
+          url: `/product-list/theme/${themeSlug}`,
+          changefreq: 'weekly',
+          priority: 0.7,
+          lastmod: new Date().toISOString()
+        }
+      })
   } catch (err) {
     console.error('❌ Error obteniendo categorías:', err)
     return []
@@ -82,12 +87,15 @@ async function getCategoryRoutes() {
   }
 }
 
-// Generar sitemap
+// 🔹 Generar sitemap
 async function generateSitemap() {
   console.log('🚀 Generando sitemap...')
 
-  const dynamicRoutes = await getDynamicRoutes()
-  const categoryRoutes = await getCategoryRoutes()
+  const [dynamicRoutes, categoryRoutes] = await Promise.all([
+    getDynamicRoutes(),
+    getCategoryRoutes()
+  ])
+
   const allRoutes = [...staticRoutes, ...dynamicRoutes, ...categoryRoutes]
 
   const sitemapStream = new SitemapStream({ hostname })
@@ -97,7 +105,8 @@ async function generateSitemap() {
   allRoutes.forEach(route => sitemapStream.write(route))
   sitemapStream.end()
 
-  const xmlData = await streamToPromise(sitemapStream)
+  await streamToPromise(sitemapStream)
+
   console.log('✅ Sitemap generado con éxito')
   console.log(`📄 Total de URLs: ${allRoutes.length}`)
 }

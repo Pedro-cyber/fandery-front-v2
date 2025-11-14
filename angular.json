@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "spanish-bricks": {
+    "fandery": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -74,18 +74,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "spanish-bricks:build"
+            "browserTarget": "fandery:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "spanish-bricks:build:production"
+              "browserTarget": "fandery:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "spanish-bricks:build"
+            "browserTarget": "fandery:build"
           }
         },
         "test": {
@@ -122,16 +122,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "spanish-bricks:serve"
+            "devServerTarget": "fandery:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "spanish-bricks:serve:production"
+              "devServerTarget": "fandery:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "spanish-bricks"
+  "defaultProject": "fandery"
 }

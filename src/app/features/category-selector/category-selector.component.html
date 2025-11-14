@@ -3,19 +3,20 @@
   <div class="themes-grid">
     <ng-container *ngFor="let theme of themes">
       <div class="theme-item" *ngIf="themeImages[theme._id]">
-        <a [routerLink]="['/product-list']" [queryParams]="{ theme: theme._id }">
-           <img [src]="themeImages[theme._id]" [alt]="theme._id" width="200" height="100">
+        <a [routerLink]="['/product-list/theme', theme._id | slugify]">
+          <img [src]="themeImages[theme._id]" [alt]="theme._id" width="200" height="100">
         </a>
       </div>
     </ng-container>
   </div>
+
   <div class="others-categories">
     <h2>Otras categorías</h2>
     <div class="themes-list">
       <ng-container *ngFor="let theme of themes">
         <div class="theme-item" *ngIf="!themeImages[theme._id]">
-          <a [routerLink]="['/product-list']" [queryParams]="{ theme: theme._id }">
-          {{ theme._id }}
+          <a [routerLink]="['/product-list/theme', theme._id | slugify]">
+            {{ theme._id }}
           </a>
         </div>
       </ng-container>

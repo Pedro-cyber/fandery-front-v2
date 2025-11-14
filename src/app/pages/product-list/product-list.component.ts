@@ -29,7 +29,7 @@ export class ProductListComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ApiService: ApiService,
+    private api: ApiService,
     private location: Location,
     private titleService: Title,
     private metaService: Meta,
@@ -37,69 +37,82 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const newQuery = params['q'] || '';
-      const newTheme = params['theme'] || '';
-      const pageParam = +params['page'];
-      const filterParam = params['filter'];
-      const sortParam = params['sort'];
+    // Suscribirse tanto a los parámetros de ruta como a los queryParams
+    this.route.paramMap.subscribe(params => {
+      const themeParam = params.get('theme') ;
 
-      this.currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
-      this.filter = filterParam === 'offers' ? 'offers' : 'all';
-      this.sortOrder = sortParam || 'discountDesc';
-
-      this.query = newQuery;
-      this.theme = newTheme;
-
-      if (this.theme) {
-        this.getByTheme();
-      } else if (this.query) {
-        this.getByQuery();
-      } else {
-        this.productos = [];
-        this.productosFiltrados = [];
-        this.productosPaginados = [];
+      if (themeParam) {
+        this.theme = this.deslugify(themeParam);
       }
 
-      if (!this.themes.length) {
-        this.ApiService.getThemes().subscribe(themes => {
-          this.themes = themes;
-        });
-      }
+      this.route.queryParams.subscribe(queryParams => {
+        this.query = queryParams['q'] || '';
+        const pageParam = +queryParams['page'];
+        const filterParam = queryParams['filter'];
+        const sortParam = queryParams['sort'];
+
+        this.currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+        this.filter = filterParam === 'offers' ? 'offers' : 'all';
+        this.sortOrder = sortParam || 'discountDesc';
+
+        // Cargar productos según la ruta activa
+        if (this.theme) {
+          this.getByTheme();
+        } else if (this.query) {
+          this.getByQuery();
+        } else {
+          this.productos = [];
+          this.productosFiltrados = [];
+          this.productosPaginados = [];
+        }
+
+        // Cargar lista de themes (solo una vez)
+        if (!this.themes.length) {
+          this.api.getThemes().subscribe(themes => (this.themes = themes));
+        }
+      });
     });
   }
 
   getByQuery() {
-    this.ApiService.searchProducts(this.query).subscribe(result => {
+    this.api.searchProducts(this.query).subscribe(result => {
       this.productos = result;
       this.applyFilterAndPagination();
+      this.resetMetaTags(`Resultados para "${this.query}"`);
     });
   }
 
   getByTheme() {
-    this.ApiService.searchByTheme(this.theme).subscribe(result => {
+    this.api.searchByTheme(this.theme).subscribe(result => {
       this.productos = result;
       this.applyFilterAndPagination();
-
-      if (this.theme) {
-        const variables = { category: this.theme };
-
-        const titleTemplate =
-          'Ofertas LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
-
-        const descriptionTemplate =
-          '{Ofertas|Promociones|Descuentos|Precios de|Sets de} LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
-
-        const metaTitle = this.spintax.generate(titleTemplate, variables, this.theme);
-        const metaDescription = this.spintax.generate(descriptionTemplate, variables, this.theme);
-
-        // Aplicar meta tags de forma segura
-        this.titleService.setTitle(metaTitle);
-        this.metaService.updateTag({ name: 'description', content: metaDescription });
-        this.metaService.updateTag({ property: 'og:title', content: metaTitle });
-        this.metaService.updateTag({ property: 'og:description', content: metaDescription });
-      }
+      this.updateMetaForTheme();
     });
+  }
+
+  private updateMetaForTheme() {
+    if (!this.theme) return;
+
+    const variables = { category: this.theme };
+
+    const titleTemplate =
+      'Ofertas LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
+
+    const descriptionTemplate =
+      '{Ofertas|Promociones|Descuentos|Precios de|Sets de} LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
+
+    const metaTitle = this.spintax.generate(titleTemplate, variables, this.theme);
+    const metaDescription = this.spintax.generate(descriptionTemplate, variables, this.theme);
+
+    this.titleService.setTitle(metaTitle);
+    this.metaService.updateTag({ name: 'description', content: metaDescription });
+    this.metaService.updateTag({ property: 'og:title', content: metaTitle });
+    this.metaService.updateTag({ property: 'og:description', content: metaDescription });
+  }
+
+  private resetMetaTags(title: string) {
+    this.titleService.setTitle(`${title} | Fandery`);
+    this.metaService.updateTag({ name: 'description', content: `${title} – Compara precios de sets LEGO` });
   }
 
   setFilter(filter: 'all' | 'offers') {
@@ -143,11 +156,10 @@ export class ProductListComponent implements OnInit {
   }
 
   applyFilterAndPagination() {
-    if (this.filter === 'offers') {
-      this.productosFiltrados = this.productos.filter(p => p.descuento && p.descuento > 0);
-    } else {
-      this.productosFiltrados = [...this.productos];
-    }
+    this.productosFiltrados =
+      this.filter === 'offers'
+        ? this.productos.filter(p => p.descuento && p.descuento > 0)
+        : [...this.productos];
 
     this.applySorting();
     this.totalPages = Math.ceil(this.productosFiltrados.length / this.pageSize);
@@ -164,17 +176,21 @@ export class ProductListComponent implements OnInit {
   private updateUrl() {
     const queryParams: any = {};
     if (this.query) queryParams.q = this.query;
-    if (this.theme) queryParams.theme = this.theme;
     queryParams.page = this.currentPage;
     queryParams.filter = this.filter === 'all' ? null : this.filter;
-    queryParams.sort   = this.sortOrder === 'discountDesc' ? null : this.sortOrder;
+    queryParams.sort = this.sortOrder === 'discountDesc' ? null : this.sortOrder;
 
-    const urlTree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge'
-    });
+    // 🔹 Si hay theme, navegamos a /product-list/theme/:theme
+    if (this.theme) {
+      this.router.navigate(['/product-list/theme', this.theme], { queryParams });
+    } else {
+      this.router.navigate(['/product-list'], { queryParams });
+    }
+  }
 
-    this.location.replaceState(urlTree.toString());
+  private deslugify(slug: string): string {
+    return slug
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
   }
 }

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { ScullyLibModule } from '@scullyio/ng-lib';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -30,7 +31,7 @@ import { PaginatorComponent } from './features/paginator/paginator.component';
 import { NovedadesComponent } from './pages/novedades/novedades.component';
 import { FilterToggleComponent } from './features/filter-toggle/filter-toggle.component';
 import { AffiliateLinkPipe } from './pipes/affliliation-link.pipe';
-
+import { SlugifyPipe } from './pipes/slugify.pipe';
 
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
@@ -70,6 +71,7 @@ registerLocaleData(localeEs, 'es');
     FeaturedProductsComponent,
     SortButtonsComponent,
     AffiliateLinkPipe,
+    SlugifyPipe,
     RecientesComponent
   ],
   imports: [
@@ -77,7 +79,8 @@ registerLocaleData(localeEs, 'es');
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    SwiperModule
+    SwiperModule,
+    ScullyLibModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'es' },

@@ -30,7 +30,7 @@
   >
   <ng-template swiperSlide *ngFor="let theme of filteredThemes; let i = index">
     <div class="theme-item">
-      <a [routerLink]="['/product-list']" [queryParams]="{ theme: theme._id }">
+      <a [routerLink]="['/product-list/theme', theme._id | slugify]">
         <img
           [src]="i < 9 ? themeImages[theme._id] : null"
           [attr.data-src]="i >= 9 ? themeImages[theme._id] : null"

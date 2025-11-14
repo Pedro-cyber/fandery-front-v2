@@ -1,0 +1,11 @@
+identifier: m7h3xdzfa0i1y473
+appPort: 1864
+staticPort: 1668
+reloadPort: 2667
+hostName: localhost
+projectName: fandery
+homeFolder: /Users/pedrogarcia/Projects/fandery-front-v2
+distFolder: ./dist/fandery
+outDir: /Users/pedrogarcia/Projects/fandery-front-v2/dist/static
+handle404: ''
+allowErrorCollect: true

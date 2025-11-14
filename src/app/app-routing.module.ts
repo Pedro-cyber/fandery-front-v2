@@ -15,6 +15,7 @@ import { AuthResolver } from './services/auth.resolver';
 export const routes: Routes = [
   { path: '', component: HomeComponent, resolve: { auth: AuthResolver } },
   { path: 'product-list', component: ProductListComponent, resolve: { auth: AuthResolver } },
+  { path: 'product-list/theme/:theme', component: ProductListComponent, resolve: { auth: AuthResolver } },
   { path: 'sets/:slug', component: ProductDetailComponent, resolve: { auth: AuthResolver } },
   { path: 'about-us', component: AboutUsComponent, resolve: { auth: AuthResolver } },
   { path: 'ofertas', component: OffersComponent, resolve: { auth: AuthResolver } },
