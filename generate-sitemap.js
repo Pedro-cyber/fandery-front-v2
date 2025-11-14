@@ -1,7 +1,7 @@
-import { SitemapStream, streamToPromise } from 'sitemap'
-import { createWriteStream } from 'fs'
-import { MongoClient } from 'mongodb'
-import dotenv from 'dotenv'
+const { SitemapStream, streamToPromise } = require ('sitemap');
+const { createWriteStream } = require('fs');
+const { MongoClient } = require( 'mongodb');
+const dotenv = require('dotenv');
 dotenv.config()
 
 const mongoUri = process.env.MONGO_URI
