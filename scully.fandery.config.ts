@@ -11,10 +11,10 @@ export const config: ScullyConfig = {
   defaultPostRenderers: ['addCanonical'],
   maxRenderThreads: 4,
   routes: {
-   /*'/sets/:slug': {
+   '/sets/:slug': {
       type: 'data',
       waitForSelector: '.product-detail-container .product-detail-description',
-    },*/
+    },
     '/product-list/theme/:theme': {
       type: 'dataCategories',
       waitForSelector: '.card',
