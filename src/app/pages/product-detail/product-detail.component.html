@@ -6,7 +6,9 @@
         <!-- ✅ Theme -->
       <div class="theme">
         <ng-container *ngIf="themeImages[product.theme]; else showThemeName">
-          <img [src]="themeImages[product.theme]" [alt]="product.theme">
+          <a [routerLink]="['/product-list/theme', product.theme | slugify]">
+            <img [src]="themeImages[product.theme]" [alt]="product.theme">
+          </a>
         </ng-container>
         <ng-template #showThemeName>
           <span class="theme-name">{{ product.theme }}</span>

@@ -17,7 +17,7 @@
   <a
   [href]="precio.url | affiliateLink: precio.store"
   target="_blank"
-  rel="noopener noreferrer"
+  rel="nofollow sponsored noopener noreferrer"
   class="precio-card {{ precio.store }} "
   [ngClass]="isPriceMinHistoric(precio.price) ? 'min-historic' : ''"
   (click)="trackStoreClick($event, precio)"
