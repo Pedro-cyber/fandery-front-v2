@@ -10,6 +10,7 @@ import { CategoriasComponent } from './pages/categorias/categorias.component';
 import { PromocionesComponent } from './pages/promociones/promociones.component';
 import { NovedadesComponent } from './pages/novedades/novedades.component';
 import { RecientesComponent } from './pages/recientes/recientes.component';
+import { ExclusivosComponent } from './pages/exclusivos/exclusivos.component';
 import { AuthResolver } from './services/auth.resolver';
 
 export const routes: Routes = [
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'promociones', component: PromocionesComponent, resolve: { auth: AuthResolver } },
   { path: 'novedades', component: NovedadesComponent, resolve: { auth: AuthResolver } },
   { path: 'recientes', component: RecientesComponent, resolve: { auth: AuthResolver } },
+  { path: 'exclusivos', component: ExclusivosComponent, resolve: { auth: AuthResolver } },
   { path: '**', redirectTo: '' }
 ];
 

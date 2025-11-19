@@ -39,6 +39,7 @@ import { FeaturedProductsComponent } from './features/featured-products/featured
 import { SortButtonsComponent } from './features/sort-buttons/sort-buttons.component';
 import { SwiperModule } from 'swiper/angular';
 import { RecientesComponent } from './pages/recientes/recientes.component';
+import { ExclusivosComponent } from './pages/exclusivos/exclusivos.component';
 
 
 registerLocaleData(localeEs, 'es');
@@ -72,7 +73,8 @@ registerLocaleData(localeEs, 'es');
     SortButtonsComponent,
     AffiliateLinkPipe,
     SlugifyPipe,
-    RecientesComponent
+    RecientesComponent,
+    ExclusivosComponent
   ],
   imports: [
     BrowserModule,
