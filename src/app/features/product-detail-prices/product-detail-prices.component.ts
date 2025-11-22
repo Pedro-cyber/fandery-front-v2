@@ -22,6 +22,7 @@ export class ProductDetailPricesComponent  {
     brickoutique: 'assets/images/stores/brickoutique_logo.png',
     lego: 'assets/images/stores/lego_logo.webp',
     Fnac: 'assets/images/stores/fnac_logo.webp',
+    Carrefour: 'assets/images/stores/carrefour_logo.webp',
     'El Corte Ingles ES':  'assets/images/stores/eci_logo.jpg',
     'Abacus ES':  'assets/images/stores/abacus_logo.png'
   };
