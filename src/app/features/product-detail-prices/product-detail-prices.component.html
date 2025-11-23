@@ -7,10 +7,10 @@
 
   <div *ngFor="let precio of product.precios" class="precio-wrapper">
 
-  <div class="cart-advertising" *ngIf="precio.couponTypeApplied == 'Siniva' || precio.couponTypeApplied == 'Amazoncoupon'">
+  <div class="cart-advertising" *ngIf="precio.couponTypeApplied == 'Siniva'">
     <i class="fa-solid fa-circle-info"></i>Descuento aplicado en la cesta
   </div>
-  <div class="cart-advertising" *ngIf="precio.couponTypeApplied == 'Flash' || precio.couponTypeApplied == 'Plus'">
+  <div class="cart-advertising" *ngIf="precio.couponTypeApplied == 'Flash' || precio.couponTypeApplied == 'Plus' || precio.couponTypeApplied == 'Amazoncoupon'">
     <i class="fa-solid fa-circle-info"></i>Validación de cupón en tienda
   </div>
 
