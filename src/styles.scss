@@ -19,11 +19,12 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
-h2 {
+h1, h2 {
   text-align: center;
   padding-bottom: 1rem;
   padding-top: 1rem;
   font-weight: bold;
+  font-size: 28px;
 }
 
 .main-container {
@@ -47,11 +48,12 @@ main {
 }
 
 @media (max-width: 768px) {
-  h2 {
+  h1, h2 {
     background: #fff;
     margin: 0;
     z-index: 500;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 28px;
   }
 }

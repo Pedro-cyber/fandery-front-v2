@@ -189,6 +189,19 @@ export class ProductListComponent implements OnInit {
   }
 
   private deslugify(slug: string): string {
+
+    if (slug == 'dc-comics-super-heroes') {
+      return 'DC Comics Super Heroes'
+    }
+    if (slug == 'sonic-the-hedgehog') {
+      return 'Sonic the Hedgehog'
+    }
+    if (slug == 'gabby-s-dollhouse') {
+      return "Gabby's Dollhouse"
+    }
+    if (slug == 'brickheadz') {
+      return "BrickHeadz"
+    }
     return slug
       .replace(/-/g, ' ')
       .replace(/\b\w/g, l => l.toUpperCase());

@@ -1,5 +1,5 @@
 <div class="category-selector">
-  <h2>Categorías</h2>
+  <h1>Categorías</h1>
   <div class="themes-grid">
     <ng-container *ngFor="let theme of themes">
       <div class="theme-item" *ngIf="themeImages[theme._id]">
@@ -11,7 +11,7 @@
   </div>
 
   <div class="others-categories">
-    <h2>Otras categorías</h2>
+    <h1>Otras categorías</h1>
     <div class="themes-list">
       <ng-container *ngFor="let theme of themes">
         <div class="theme-item" *ngIf="!themeImages[theme._id]">
