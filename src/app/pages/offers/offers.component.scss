@@ -39,3 +39,23 @@ button.btn {
     }
 
 }
+
+.filter-block {
+  display: flex;
+  width: 100%;
+}
+
+.filter-block label {
+  width: 70%;
+  margin-top: 5px;
+}
+
+.filter-block select {
+  font-weight: bold;
+}
+
+@media (min-width: 1024px) {
+  .filter-block {
+    width: 45%;
+  }
+}

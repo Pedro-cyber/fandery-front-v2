@@ -18,6 +18,10 @@ export class OffersComponent implements OnInit {
   pageSize: number = 24;
   totalPages: number = 0;
 
+  themes: any[] = [];
+  selectedTheme: string = '';
+  filteredDeals: any[] = [];
+
   sortOrder: 'priceAsc' | 'priceDesc' | 'discountAsc' | 'discountDesc' = 'discountDesc';
 
   private dataCargada = false;
@@ -45,6 +49,8 @@ export class OffersComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const pageParam = +params['page'];
       const sortParam = params['sort'];
+      const themeParam = params['theme'];
+      this.selectedTheme = themeParam || '';
 
       this.currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
       this.sortOrder = sortParam || 'discountDesc';
@@ -52,6 +58,7 @@ export class OffersComponent implements OnInit {
       if (!this.dataCargada) {
         this.api.getBestDeals().subscribe(deals => {
           this.bestDeals = deals;
+          this.generateThemes();
           this.dataCargada = true;
           this.applySorting();
           this.totalPages = Math.ceil(this.bestDeals.length / this.pageSize);
@@ -79,19 +86,35 @@ export class OffersComponent implements OnInit {
     }
   }
 
+  private generateThemes() {
+    this.themes = [...new Set(
+      this.bestDeals
+        .filter(d => d.theme)
+        .map(d => d.theme)
+    )].sort();
+  }
+
   private applySorting() {
+
+     this.filteredDeals = [...this.bestDeals];
+
+    // 1️⃣ Filtro por theme
+    if (this.selectedTheme) {
+      this.filteredDeals = this.filteredDeals.filter(d => d.theme === this.selectedTheme);
+    }
+
     switch (this.sortOrder) {
       case 'priceAsc':
-        this.bestDeals.sort((a, b) => a.mejorPrecio - b.mejorPrecio);
+        this.filteredDeals.sort((a, b) => a.mejorPrecio - b.mejorPrecio);
         break;
       case 'priceDesc':
-        this.bestDeals.sort((a, b) => b.mejorPrecio - a.mejorPrecio);
+        this.filteredDeals.sort((a, b) => b.mejorPrecio - a.mejorPrecio);
         break;
       case 'discountAsc':
-        this.bestDeals.sort((a, b) => (a.descuento || 0) - (b.descuento || 0));
+        this.filteredDeals.sort((a, b) => (a.descuento || 0) - (b.descuento || 0));
         break;
       case 'discountDesc':
-        this.bestDeals.sort((a, b) => (b.descuento || 0) - (a.descuento || 0));
+        this.filteredDeals.sort((a, b) => (b.descuento || 0) - (a.descuento || 0));
         break;
     }
   }
@@ -99,7 +122,7 @@ export class OffersComponent implements OnInit {
   updatePagination() {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.productosPaginados = this.bestDeals.slice(start, end);
+    this.productosPaginados = this.filteredDeals.slice(start, end);
   }
 
   onPageChange(page: number) {
@@ -109,10 +132,18 @@ export class OffersComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  onThemeChange() {
+    this.currentPage = 1;
+    this.applySorting();
+    this.updatePagination();
+    this.updateUrl();
+  }
+
   private updateUrl() {
     const queryParams: any = {
       page: this.currentPage,
-      sort: this.sortOrder === 'discountDesc' ? null : this.sortOrder
+      sort: this.sortOrder === 'discountDesc' ? null : this.sortOrder,
+      theme: this.selectedTheme || null
     };
 
     const urlTree = this.router.createUrlTree([], {
