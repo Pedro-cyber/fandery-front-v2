@@ -24,7 +24,20 @@ button[aria-expanded="false"] .fa-chevron-down {
 
 button.btn {
   border-bottom: 1px solid grey;
+  border-radius: 0px;
 }
+
+.sort-filter-block span, .sort-filter-block select {
+  font-size: 14px;
+}
+
+@media (min-width: 1024px) {
+  .sort-filter-block span, .sort-filter-block select {
+    font-size: 16px;
+  }
+}
+
+
 
 .seo-text  {
   margin-top: 30px;
@@ -40,22 +53,3 @@ button.btn {
 
 }
 
-.filter-block {
-  display: flex;
-  width: 100%;
-}
-
-.filter-block label {
-  width: 70%;
-  margin-top: 5px;
-}
-
-.filter-block select {
-  font-weight: bold;
-}
-
-@media (min-width: 1024px) {
-  .filter-block {
-    width: 45%;
-  }
-}

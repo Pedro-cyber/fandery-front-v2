@@ -15,7 +15,7 @@
                 data-bs-target="#sortFilterCollapse"
                 aria-expanded="false"
                 aria-controls="sortFilterCollapse">
-          <span><strong>Filtros y orden</strong></span>
+          <span><strong>Ordenar y filtrar</strong></span>
           <i class="fa fa-chevron-down"></i>
         </button>
       </div>
@@ -23,15 +23,14 @@
       <div id="sortFilterCollapse" class="collapse d-md-block mt-2">
 
         <div class="sort-filter-block">
+          <app-sort-buttons
+          [sortOrder]="sortOrder"
+          (sortChange)="setSortOrder($event)">
+          </app-sort-buttons>
         <app-filter-toggle
           [filter]="filter"
           (filterChange)="setFilter($event)">
         </app-filter-toggle>
-
-        <app-sort-buttons
-        [sortOrder]="sortOrder"
-        (sortChange)="setSortOrder($event)">
-        </app-sort-buttons>
       </div>
     </div>
   </div>

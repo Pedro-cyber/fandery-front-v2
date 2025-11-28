@@ -1,17 +1,10 @@
-<div class="button-toggle">
-  <span>Mostrar: </span>
-  <button
-    [class.active]="filter === 'all'"
-    (click)="setFilter('all')"
-    type="button"
-    class="btn">
-    Todo
-  </button>
-  <button
-    [class.active]="filter === 'offers'"
-    (click)="setFilter('offers')"
-    type="button"
-    class="btn">
-    Solo ofertas
-  </button>
+<div class="my-3 d-flex align-items-center">
+  <span class="me-2">Mostrar:</span>
+
+  <select class="form-select w-auto"
+          [ngModel]="filter"
+          (ngModelChange)="setFilter($event)">
+    <option value="all">Todo</option>
+    <option value="offers">Solo ofertas</option>
+  </select>
 </div>

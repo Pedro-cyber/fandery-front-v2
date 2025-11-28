@@ -12,7 +12,7 @@
                 data-bs-target="#sortFilterCollapse"
                 aria-expanded="false"
                 aria-controls="sortFilterCollapse">
-          <span><strong>Orden y filtro</strong></span>
+          <span><strong>Ordenar y filtrar</strong></span>
           <i class="fa fa-chevron-down"></i>
         </button>
       </div>
@@ -22,19 +22,19 @@
           [sortOrder]="sortOrder"
           (sortChange)="setSortOrder($event)">
           </app-sort-buttons>
-        </div>
-        <!-- Filtro por theme -->
-      <div class="filter-block">
-        <label for="themeFilter" class="form-label">Filtrar por categoría</label>
+            <!-- Filtro por theme -->
+        <div class="my-3 d-flex align-items-center">
+        <span class="me-2">Filtrar por: </span>
         <select
-          id="themeFilter"
-          class="form-select"
+          class="form-select w-auto"
           [(ngModel)]="selectedTheme"
           (change)="onThemeChange()">
           <option value="">Todos</option>
           <option *ngFor="let t of themes" [value]="t">{{ t }}</option>
         </select>
       </div>
+      </div>
+
       </div>
     </div>
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 gy-2">
