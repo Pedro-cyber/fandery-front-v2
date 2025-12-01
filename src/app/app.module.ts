@@ -40,6 +40,7 @@ import { SortButtonsComponent } from './features/sort-buttons/sort-buttons.compo
 import { SwiperModule } from 'swiper/angular';
 import { RecientesComponent } from './pages/recientes/recientes.component';
 import { ExclusivosComponent } from './pages/exclusivos/exclusivos.component';
+import { AdventCalendarComponent } from './pages/advent-calendar/advent-calendar.component';
 
 
 registerLocaleData(localeEs, 'es');
@@ -74,7 +75,8 @@ registerLocaleData(localeEs, 'es');
     AffiliateLinkPipe,
     SlugifyPipe,
     RecientesComponent,
-    ExclusivosComponent
+    ExclusivosComponent,
+    AdventCalendarComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import { PromocionesComponent } from './pages/promociones/promociones.component'
 import { NovedadesComponent } from './pages/novedades/novedades.component';
 import { RecientesComponent } from './pages/recientes/recientes.component';
 import { ExclusivosComponent } from './pages/exclusivos/exclusivos.component';
+import { AdventCalendarComponent } from './pages/advent-calendar/advent-calendar.component';
 import { AuthResolver } from './services/auth.resolver';
 
 export const routes: Routes = [
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: 'novedades', component: NovedadesComponent, resolve: { auth: AuthResolver } },
   { path: 'recientes', component: RecientesComponent, resolve: { auth: AuthResolver } },
   { path: 'exclusivos', component: ExclusivosComponent, resolve: { auth: AuthResolver } },
+  { path: 'calendario-adviento', component: AdventCalendarComponent, resolve: { auth: AuthResolver } },
   { path: '**', redirectTo: '' }
 ];
 
