@@ -4,7 +4,7 @@
     <div class="calendar-container">
       <h1>Calendario de Adviento 2025</h1>
 
-      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 gy-2">
+      <div class="row row-cols-3 row-cols-md-3 row-cols-lg-4 gy-2">
         <div
           class="col"
           *ngFor="let d of days"
@@ -19,12 +19,12 @@
           <!-- Día con oferta activa -->
           <div class="day-card day-offer" *ngIf="d.productData" [class.expired]="d.expired" (click)="goToDetail(d.productData)">
             <img class="image" [src]="d.productData.image" [alt]="d.productData.name_es || d.productData.name" />
-            <div class="title-container" style="height: 3rem;">
+            <div class="title-container d-none d-md-block" style="height: 3rem;">
               <p class="title">{{ d.productData.name_es || d.productData.name }}</p>
             </div>
             <p class="price">
             <span class="price-final">{{ d.savedPrice | number:'1.2-2' }} €</span>
-            <span class="price-original">{{ d.savedOriginal | number:'1.2-2' }} €</span>
+            <span class="price-original d-none d-md-block">{{ d.savedOriginal | number:'1.2-2' }} €</span>
             <span class="discount">-{{ d.savedDiscount | number:'1.0-0' }}%</span>
             </p>
           </div>

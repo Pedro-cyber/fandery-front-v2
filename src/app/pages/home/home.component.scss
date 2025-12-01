@@ -87,11 +87,20 @@
 
 .home-button {
   color: black;
-
   text-align: center;
   background-color: #ffc107;
   font-size: 14px;
   font-weight: bold;
   border-radius: 5px;
   padding: 0.5rem;
+}
+
+.banner-mobile {
+  display: flex;
+  justify-content: center;
+  padding-top: 15px
+}
+
+.banner-desktop img {
+  width: 100%;
 }
