@@ -40,7 +40,8 @@ export class AdventCalendarComponent implements OnInit {
   private loadAssignedOffers() {
     const savedMapping: Record<number, { id: string; price: number; original: number }> = {
       1: { id: "76435", price: 119.99, original: 199.99 },
-      2: { id: "42206", price: 153.98, original: 229.99 }
+      2: { id: "42206", price: 153.98, original: 229.99 },
+      3: { id: "75435", price: 96.74, original: 149.99 }
       // ...
     };
 
