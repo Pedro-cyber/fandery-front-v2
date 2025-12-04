@@ -37,46 +37,38 @@ export class AdventCalendarComponent implements OnInit {
     });
   }
 
-  private loadAssignedOffers() {
+
+  private async loadAssignedOffers() {
     const savedMapping: Record<number, { id: string; price: number; original: number }> = {
       1: { id: "76435", price: 119.99, original: 199.99 },
       2: { id: "42206", price: 153.98, original: 229.99 },
       3: { id: "75435", price: 96.74, original: 149.99 },
       4: { id: "10338", price: 65.99, original: 89.99 }
-      // ...
     };
 
-    this.days.forEach(day => {
+    for (const day of this.days) {
       const saved = savedMapping[day.day];
-      if (!saved) return;
+      if (!saved) continue;
 
-      // Datos guardados
       day.productId = saved.id;
       day.savedPrice = saved.price;
       day.savedOriginal = saved.original;
       day.savedDiscount = ((saved.original - saved.price) / saved.original) * 100;
 
-      // Buscar producto actual
+      day.productData = await this.api.getProductById(saved.id).toPromise();
+
       const found = this.bestDeals.find(d => String(d.legoId) === String(saved.id));
 
       if (!found) {
         day.expired = true;
-        return;
+        continue;
       }
 
       const currentPrice = Number(found.mejorPrecio);
-
-      if (currentPrice !== saved.price) {
-        day.expired = true;
-        day.productData = found; // opcional: mostrar la oferta aunque haya cambiado
-        return;
-      }
-
-      // Oferta válida
-      day.productData = found;
-      day.expired = false;
-    });
+      day.expired = currentPrice !== saved.price;
+    }
   }
+
 
 
   private slugify(name: string, id: string): string {

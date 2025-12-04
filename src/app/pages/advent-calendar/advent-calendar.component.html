@@ -12,15 +12,15 @@
         >
 
           <!-- Día sin oferta asignada -->
-          <div class="day-card day-number" *ngIf="!d.productId">
+          <div class="day-card day-number" *ngIf="!d.productData">
             {{ d.day }}
           </div>
 
           <!-- Día con oferta activa -->
-          <div class="day-card day-offer" *ngIf="d.productData" [class.expired]="d.expired" (click)="goToDetail(d.productData)">
-            <img class="image" [src]="d.productData.image" [alt]="d.productData.name_es || d.productData.name" />
+          <div class="day-card day-offer" *ngIf="d.productData" [class.expired]="d.expired" (click)="goToDetail(d.productData.set)">
+            <img class="image" [src]="d.productData.set.image" [alt]="d.productData.set.name_es || d.productData.set.name" />
             <div class="title-container d-none d-md-block" style="height: 3rem;">
-              <p class="title">{{ d.productData.name_es || d.productData.name }}</p>
+              <p class="title">{{ d.productData.set.name_es || d.productData.set.name }}</p>
             </div>
             <p class="price">
             <span class="price-final">{{ d.savedPrice | number:'1.2-2' }} €</span>
