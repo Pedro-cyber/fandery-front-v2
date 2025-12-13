@@ -12,10 +12,7 @@ export class AffiliateLinkPipe implements PipeTransform {
   }
 
   transform(url: string, store?: string): string {
-    //const ua = navigator.userAgent;
-    //const isTelegram = /Telegram/i.test(ua);
 
-    //if (isTelegram) {
 
     if (store === 'miravia' && !url.includes('awin1.com')) {
       const awinmid = '37168';
@@ -23,8 +20,14 @@ export class AffiliateLinkPipe implements PipeTransform {
       const base = 'https://www.awin1.com/cread.php';
       url = `${base}?awinmid=${awinmid}&awinaffid=${awinaffid}&ued=${encodeURIComponent(url)}`;
     }
-      return `${environment.apiUrl}/t/${this.encodeBase64Url(url)}`;
-    //}
-    return url;
+
+    if (store === 'toysrus' && !url.includes('tradedoubler.com')) {
+      const base = 'https://clk.tradedoubler.com/click?p=211811&a=3439161&url=';
+      const encodedUrl = encodeURIComponent(url);
+      url =  `${base}${encodedUrl}`;
+    }
+
+    return `${environment.apiUrl}/t/${this.encodeBase64Url(url)}`;
+
   }
 }
