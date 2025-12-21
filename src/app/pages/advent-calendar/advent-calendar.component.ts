@@ -59,7 +59,8 @@ export class AdventCalendarComponent implements OnInit {
       17: { id: "43249", price: 44.99, original: 64.99 },
       18: { id: "43268", price: 59.99, original: 89.99 },
       19: { id: "75433", price: 44.99, original: 69.99 },
-      20: { id: "60466", price: 39.99, original: 59.99 }
+      20: { id: "60466", price: 39.99, original: 59.99 },
+      21: { id: "42215", price: 266.67, original: 399.99 }
     };
 
     for (const day of this.days) {
