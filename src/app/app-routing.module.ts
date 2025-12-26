@@ -26,7 +26,7 @@ export const routes: Routes = [
   { path: 'novedades', component: NovedadesComponent, resolve: { auth: AuthResolver } },
   { path: 'recientes', component: RecientesComponent, resolve: { auth: AuthResolver } },
   { path: 'exclusivos', component: ExclusivosComponent, resolve: { auth: AuthResolver } },
-  { path: 'calendario-adviento', component: AdventCalendarComponent, resolve: { auth: AuthResolver } },
+  //{ path: 'calendario-adviento', component: AdventCalendarComponent, resolve: { auth: AuthResolver } },
   { path: '**', redirectTo: '' }
 ];
 
