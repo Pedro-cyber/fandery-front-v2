@@ -68,13 +68,13 @@ export class ProductDetailComponent implements OnInit {
         const legoId = parts[parts.length - 1];
         this.id = legoId;
 
-        this.loadProduct(legoId);
+        this.loadProduct(legoId, slug);
         this.getHistoricalData(legoId);
       }
     });
   }
 
-  loadProduct(id: string): void {
+  loadProduct(id: string, slug: string): void {
     this.api.getProductById(id).subscribe(response => {
       this.product = {
         ...response.set,
@@ -102,6 +102,11 @@ export class ProductDetailComponent implements OnInit {
         this.metaService.updateTag({ name: 'description', content: metaDescription });
         this.metaService.updateTag({ property: 'og:title', content: metaTitle });
         this.metaService.updateTag({ property: 'og:description', content: metaDescription });
+        this.metaService.updateTag({ property: 'og:image', content: this.product.image });
+        this.metaService.updateTag({ name: 'twitter:title', content: metaTitle });
+        this.metaService.updateTag({ name: 'twitter:description', content: metaDescription });
+        this.metaService.updateTag({ name: 'twitter:image', content: this.product.image });
+        this.addProductSchema(this.product, slug);
       } else {
         this.titleService.setTitle(`Detalle del producto | Fandery`);
       }
@@ -113,4 +118,49 @@ export class ProductDetailComponent implements OnInit {
       this.historicalData = response;
     });
   }
+
+  addProductSchema(product: Product, slug:string): void {
+  if (!product) return;
+
+  let minPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
+  let maxPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
+
+  product.precios?.forEach(p => {
+    if (p.price < minPrice) minPrice = p.price;
+    if (p.price > maxPrice) maxPrice = p.price;
+  });
+
+  const url = `https://www.fandery.com/sets/${slug}`;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": url,
+    "name": product.name_es || product.name || `LEGO Set ${this.id}`,
+    "description": product.description_es || `Descubre el set LEGO ${product.name_es || this.id}. Compara precios en tiendas oficiales.`,
+    "image": product.image,
+    "brand": {
+      "@type": "Brand",
+      "name": "LEGO"
+    },
+    "sku": product.legoId || this.id,
+    "url": `https://www.fandery.com/sets/${this.id}`,
+    "category": product.theme || "Juguetes y juegos > Construcción > LEGO",
+    "offers": {
+      "@type": "AggregateOffer",
+      "url": url,
+      "priceCurrency": "EUR",
+      "lowPrice": minPrice || 0,
+      "highPrice": maxPrice || 0,
+      "offerCount": product.precios?.length || 1,
+      "availability": "https://schema.org/InStock"
+    }
+  };
+
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.text = JSON.stringify(schema, null, 2);
+  document.head.appendChild(script);
+}
+
 }
