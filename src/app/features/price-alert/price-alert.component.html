@@ -1,0 +1,164 @@
+<!-- BOTÓN -->
+ <div
+  class="button-container-modal">
+<button
+  class="btn btn-outline-primary mb-3 price-alert"
+  (click)="openModal()">
+  <i class="fa fa-bell"></i>Avísame si baja de precio
+</button>
+</div>
+
+<!-- MODAL -->
+<div
+  class="modal fade"
+  [id]="modalId"
+  tabindex="-1"
+  aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+         <div class="modal-header-title d-flex">
+          <div class="logo">
+            <img src="assets/lupasmall.png" alt="Fandery" width="30" />
+          </div>
+           <h5 class="modal-title">
+          Avísame si baja de precio
+          </h5>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <form (ngSubmit)="submit()" #form="ngForm">
+        <div class="modal-body">
+
+          <!-- SUCCESS -->
+          <div *ngIf="success" class="alert alert-success">
+            ✅ Te avisaremos cuando se cumpla la condición
+          </div>
+
+          <!-- ERROR -->
+          <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+
+          <!-- PRODUCT NAME -->
+          <p class="fw-bold mb-1">
+            {{ product.name_es || product.name }}
+          </p>
+
+          <!-- INTRO -->
+          <p class="my-3">
+            Avísame cuando:
+          </p>
+
+          <!-- ALERT TYPE -->
+          <div class="mb-3">
+
+            <!-- PRICE OPTION -->
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="alertType"
+                id="alertPrice"
+                value="price"
+                [(ngModel)]="alertType">
+              <label class="form-check-label" for="alertPrice">
+                El precio baje de
+              </label>
+            </div>
+
+            <div class="ms-4 mt-2" *ngIf="alertType === 'price'">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Precio en €"
+                min="1"
+                step="0.01"
+                name="minPrice"
+                [(ngModel)]="alertMinPrice">
+            </div>
+
+            <!-- DISCOUNT OPTION -->
+            <div class="form-check mt-3">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="alertType"
+                id="alertDiscount"
+                value="discount"
+                [(ngModel)]="alertType">
+              <label class="form-check-label" for="alertDiscount">
+                Alcance un descuento mínimo de
+              </label>
+            </div>
+
+            <div class="ms-4 mt-2" *ngIf="alertType === 'discount'">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Descuento en %"
+                min="1"
+                max="90"
+                step="1"
+                name="discount"
+                [(ngModel)]="alertDiscount">
+            </div>
+
+          </div>
+
+          <!-- EMAIL -->
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              required
+              [(ngModel)]="alertEmail">
+          </div>
+
+          <!-- CONSENT -->
+          <div class="form-check mb-2">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="consent"
+              name="consent"
+              required
+              [(ngModel)]="consentAccepted">
+
+            <label class="form-check-label small" for="consent">
+         Acepto recibir emails relacionados con alertas de precio solicitadas y comunicaciones comerciales ocasionales de Fandery.
+            </label>
+          </div>
+
+        </div>
+
+
+        <div class="modal-footer">
+          <button
+            type="submit"
+            class="btn btn-primary"
+             [disabled]="form.invalid || loading || !consentAccepted">
+            {{ loading ? 'Guardando...' : 'Crear alerta' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">
+            Cancelar
+          </button>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

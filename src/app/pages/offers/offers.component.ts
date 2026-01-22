@@ -36,8 +36,8 @@ export class OffersComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const title = 'Ofertas LEGO 2025 | Descuentos y chollos actualizados en tiempo real | Fandery';
-    const description =  'Descubre las mejores ofertas LEGO 2025. Compara precios entre Amazon, LEGO.com, Fnac, ECI y más. Encuentra descuentos reales y chollos actualizados en tiempo real con Fandery.';
+    const title = 'Ofertas LEGO 2026 | Descuentos y chollos actualizados en tiempo real | Fandery';
+    const description =  'Descubre las mejores ofertas LEGO 2026. Compara precios entre Amazon, LEGO.com, Fnac, ECI y más. Encuentra descuentos reales y chollos actualizados en tiempo real con Fandery.';
     this.titleService.setTitle(title);
     this.metaService.updateTag({
       name: 'description',

@@ -41,6 +41,7 @@ import { SwiperModule } from 'swiper/angular';
 import { RecientesComponent } from './pages/recientes/recientes.component';
 import { ExclusivosComponent } from './pages/exclusivos/exclusivos.component';
 import { AdventCalendarComponent } from './pages/advent-calendar/advent-calendar.component';
+import { PriceAlertComponent } from './features/price-alert/price-alert.component';
 
 
 registerLocaleData(localeEs, 'es');
@@ -76,7 +77,8 @@ registerLocaleData(localeEs, 'es');
     SlugifyPipe,
     RecientesComponent,
     ExclusivosComponent,
-    AdventCalendarComponent
+    AdventCalendarComponent,
+    PriceAlertComponent
   ],
   imports: [
     BrowserModule,

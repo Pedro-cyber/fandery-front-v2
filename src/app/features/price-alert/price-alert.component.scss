@@ -1,0 +1,66 @@
+button.price-alert {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  text-transform: uppercase;
+  background-color: #ffc107;
+  text-align: center;
+  width: 95%;
+  border: none;
+
+  .fa-bell {
+    padding-right: 10px;
+  }
+}
+
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.form-check-input:focus {
+    border-color: #fed65d;
+     outline: 0;
+     box-shadow: 0 0 0 .25rem #fed65d;
+}
+
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+    color: black;
+    background-color: #ffc107;
+    border-color: #ffc107;
+
+}
+
+.btn.btn-primary {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.btn.btn-primary:hover {
+  background-color: #c69504;
+  border-color: #c69504;
+}
+
+.button-container-modal {
+  display: flex;
+  justify-content: center;
+}
+
+.modal-content {
+  border-radius: 12px;
+}
+
+.alert {
+  font-size: 0.9rem;
+}
+
+small {
+  display: block;
+  margin-top: 10px;
+}
+
+.modal-header-title {
+  gap: 20px;
+}

@@ -15,6 +15,9 @@ export class ProductDetailComponent implements OnInit {
   id: string = '';
   product: Product | null = null;
   historicalData: HistoricalData[] = [];
+  isDescriptionOpen = false;
+
+
 
   constructor(
     private api: ApiService,
@@ -73,6 +76,11 @@ export class ProductDetailComponent implements OnInit {
       }
     });
   }
+
+    toggleDescription() {
+      this.isDescriptionOpen = !this.isDescriptionOpen;
+    }
+
 
   loadProduct(id: string, slug: string): void {
     this.api.getProductById(id).subscribe(response => {
