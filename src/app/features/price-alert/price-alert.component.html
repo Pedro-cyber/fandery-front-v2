@@ -78,7 +78,7 @@
               <input
                 type="number"
                 class="form-control"
-                placeholder="Precio en €"
+                [placeholder]="'Introduce un precio inferior al actual (' + currentPrice + ') en €'"
                 min="1"
                 step="0.01"
                 name="minPrice"
@@ -103,7 +103,7 @@
               <input
                 type="number"
                 class="form-control"
-                placeholder="Descuento en %"
+                [placeholder]="'Introduce un descuento superior al actual (' + currentDiscount + ') en %'"
                 min="1"
                 max="90"
                 step="1"

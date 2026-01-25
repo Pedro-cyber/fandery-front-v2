@@ -152,7 +152,7 @@ export class ProductDetailComponent implements OnInit {
       "name": "LEGO"
     },
     "sku": product.legoId || this.id,
-    "url": `https://www.fandery.com/sets/${this.id}`,
+    "url": url,
     "category": product.theme || "Juguetes y juegos > Construcción > LEGO",
     "offers": {
       "@type": "AggregateOffer",

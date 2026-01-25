@@ -42,6 +42,18 @@ export class PriceAlertComponent implements OnDestroy {
     return this.product.price ?? null;
   }
 
+  get currentDiscount(): number | null {
+  const original = this.priceOriginal;
+  const current = this.currentPrice;
+
+  if (original === null || current === null || original <= current) {
+    return null;
+  }
+
+  return Math.round(((original - current) / original) * 100);
+}
+
+
   /* ----------------------------- */
   /* Modal                         */
   /* ----------------------------- */
