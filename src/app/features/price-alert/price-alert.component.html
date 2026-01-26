@@ -121,8 +121,16 @@
               class="form-control"
               name="email"
               required
-              [(ngModel)]="alertEmail">
+              email
+              [(ngModel)]="alertEmail"
+              #emailCtrl="ngModel">
+               <div
+                *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)"
+                class="text-danger small mt-1">
+                Introduce un email válido.
+              </div>
           </div>
+
 
           <!-- CONSENT -->
           <div class="form-check mb-2">

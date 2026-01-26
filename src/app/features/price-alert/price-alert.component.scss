@@ -33,7 +33,13 @@ button.price-alert:active {
 }
 
 .form-control::placeholder {
+  font-size: 0.7rem;
+}
+
+@media (min-width: 1024px) {
+  .form-control::placeholder {
   font-size: 0.9rem;
+}
 }
 
 .form-control:focus {
