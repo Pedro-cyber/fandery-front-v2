@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy } from '@angular/core';
 import { Modal } from 'bootstrap';
 import { ApiService } from '../../services/api.service';
 import { Product } from '../../models/product.model';
+import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
   selector: 'app-price-alert',
@@ -26,7 +27,7 @@ export class PriceAlertComponent implements OnDestroy {
 
   private modal!: Modal;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private analytics: AnalyticsService) {}
 
   /* ----------------------------- */
   /* Helpers                       */
@@ -167,5 +168,12 @@ export class PriceAlertComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.modal?.dispose();
+  }
+
+  trackAlertClick(event: MouseEvent, product: any) {
+    this.analytics.trackEvent('click_alert', {
+      lego_id: this.product.legoId,
+      lego_nombre: this.product.name_es || this.product.name
+    });
   }
 }

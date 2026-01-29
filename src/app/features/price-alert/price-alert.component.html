@@ -154,7 +154,8 @@
           <button
             type="submit"
             class="btn btn-primary"
-             [disabled]="form.invalid || loading || !consentAccepted">
+             [disabled]="form.invalid || loading || !consentAccepted"
+             (click)="trackAlertClick($event, product)">
             {{ loading ? 'Guardando...' : 'Crear alerta' }}
           </button>
           <button
