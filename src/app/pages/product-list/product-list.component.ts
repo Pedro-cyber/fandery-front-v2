@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Location } from '@angular/common';
-import { Title, Meta } from '@angular/platform-browser';
+import { Title, Meta, TransferState, makeStateKey } from '@angular/platform-browser';
 import { SpintaxService } from '../../services/spintax.service';
+
+// Claves para TransferState
+const PRODUCTS_LIST_KEY = makeStateKey<any[]>('productsListData');
+const THEMES_KEY = makeStateKey<any[]>('themesListData');
 
 @Component({
   selector: 'app-product-list',
@@ -33,16 +37,19 @@ export class ProductListComponent implements OnInit {
     private location: Location,
     private titleService: Title,
     private metaService: Meta,
-    private spintax: SpintaxService
+    private spintax: SpintaxService,
+    private transferState: TransferState // ✅ Inyectado
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse tanto a los parámetros de ruta como a los queryParams
     this.route.paramMap.subscribe(params => {
-      const themeParam = params.get('theme') ;
+      const themeParam = params.get('theme');
+      const newTheme = themeParam ? this.deslugify(themeParam) : '';
 
-      if (themeParam) {
-        this.theme = this.deslugify(themeParam);
+      // 🔴 Si el tema ha cambiado, limpiamos el estado previo para forzar recarga
+      if (this.theme !== newTheme) {
+        this.transferState.remove(PRODUCTS_LIST_KEY);
+        this.theme = newTheme;
       }
 
       this.route.queryParams.subscribe(queryParams => {
@@ -55,28 +62,52 @@ export class ProductListComponent implements OnInit {
         this.filter = filterParam === 'offers' ? 'offers' : 'all';
         this.sortOrder = sortParam || 'discountDesc';
 
-        // Cargar productos según la ruta activa
-        if (this.theme) {
-          this.getByTheme();
-        } else if (this.query) {
-          this.getByQuery();
+        // --- LÓGICA DE HIDRATACIÓN CORREGIDA ---
+        const savedProducts = this.transferState.get(PRODUCTS_LIST_KEY, null);
+
+        if (savedProducts && savedProducts.length > 0) {
+          // Solo usamos el caché si los productos corresponden a lo que buscamos
+          this.productos = savedProducts;
+          this.applyFilterAndPagination();
+          this.updateMetaLogic();
         } else {
-          this.productos = [];
-          this.productosFiltrados = [];
-          this.productosPaginados = [];
+          this.loadData();
         }
 
-        // Cargar lista de themes (solo una vez)
-        if (!this.themes.length) {
-          this.api.getThemes().subscribe(themes => (this.themes = themes));
+        // Cargar lista de themes (esta sí puede ser global)
+        const savedThemes = this.transferState.get(THEMES_KEY, null);
+        if (savedThemes) {
+          this.themes = savedThemes;
+        } else {
+          this.api.getThemes().subscribe(themes => {
+            this.themes = themes;
+            this.transferState.set(THEMES_KEY, themes);
+          });
         }
       });
     });
   }
 
+  private loadData() {
+    if (this.theme) {
+      this.getByTheme();
+    } else if (this.query) {
+      this.getByQuery();
+    }
+  }
+
+  private updateMetaLogic() {
+    if (this.theme) {
+      this.updateMetaForTheme();
+    } else if (this.query) {
+      this.resetMetaTags(`Resultados para "${this.query}"`);
+    }
+  }
+
   getByQuery() {
     this.api.searchProducts(this.query).subscribe(result => {
       this.productos = result;
+      this.transferState.set(PRODUCTS_LIST_KEY, result); // Guardar para Scully
       this.applyFilterAndPagination();
       this.resetMetaTags(`Resultados para "${this.query}"`);
     });
@@ -85,6 +116,7 @@ export class ProductListComponent implements OnInit {
   getByTheme() {
     this.api.searchByTheme(this.theme).subscribe(result => {
       this.productos = result;
+      this.transferState.set(PRODUCTS_LIST_KEY, result); // Guardar para Scully
       this.applyFilterAndPagination();
       this.updateMetaForTheme();
     });
@@ -94,12 +126,8 @@ export class ProductListComponent implements OnInit {
     if (!this.theme) return;
 
     const variables = { category: this.theme };
-
-    const titleTemplate =
-      'Ofertas LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
-
-    const descriptionTemplate =
-      '{Ofertas|Promociones|Descuentos|Precios de|Sets de} LEGO {{category}} – {Compara precios y tiendas|Compara precios y encuentra tu mejor opción|Descubre las mejores tiendas|Ofertas y precios actualizados|Encuentra los mejores precios} | Fandery';
+    const titleTemplate = 'Ofertas LEGO {{category}} – {Compara precios y tiendas|Encuentra tu mejor opción} | Fandery';
+    const descriptionTemplate = '{Ofertas|Sets de} LEGO {{category}} – {Compara precios y ahorra|Precios actualizados}.';
 
     const metaTitle = this.spintax.generate(titleTemplate, variables, this.theme);
     const metaDescription = this.spintax.generate(descriptionTemplate, variables, this.theme);
@@ -180,7 +208,6 @@ export class ProductListComponent implements OnInit {
     queryParams.filter = this.filter === 'all' ? null : this.filter;
     queryParams.sort = this.sortOrder === 'discountDesc' ? null : this.sortOrder;
 
-    // 🔹 Si hay theme, navegamos a /product-list/theme/:theme
     if (this.theme) {
       this.router.navigate(['/product-list/theme', this.theme], { queryParams });
     } else {
@@ -189,19 +216,15 @@ export class ProductListComponent implements OnInit {
   }
 
   private deslugify(slug: string): string {
+    const specialCases: {[key: string]: string} = {
+      'dc-comics-super-heroes': 'DC Comics Super Heroes',
+      'sonic-the-hedgehog': 'Sonic the Hedgehog',
+      'gabby-s-dollhouse': "Gabby's Dollhouse",
+      'brickheadz': 'BrickHeadz'
+    };
 
-    if (slug == 'dc-comics-super-heroes') {
-      return 'DC Comics Super Heroes'
-    }
-    if (slug == 'sonic-the-hedgehog') {
-      return 'Sonic the Hedgehog'
-    }
-    if (slug == 'gabby-s-dollhouse') {
-      return "Gabby's Dollhouse"
-    }
-    if (slug == 'brickheadz') {
-      return "BrickHeadz"
-    }
+    if (specialCases[slug]) return specialCases[slug];
+
     return slug
       .replace(/-/g, ' ')
       .replace(/\b\w/g, l => l.toUpperCase());

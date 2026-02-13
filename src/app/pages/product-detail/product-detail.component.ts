@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Product } from '../../models/product.model';
 import { HistoricalData } from 'src/app/models/historical-data';
-import { Title, Meta } from '@angular/platform-browser';
-import { SpintaxService } from '../../services/spintax.service'; // ✅ importar servicio
+import { Title, Meta, TransferState, makeStateKey } from '@angular/platform-browser';
+import { SpintaxService } from '../../services/spintax.service';
+
+// Definición de llaves para TransferState
+const PRODUCT_KEY = makeStateKey<any>('productData');
+const HISTORY_KEY = makeStateKey<any>('historyData');
 
 @Component({
   selector: 'app-product-detail',
@@ -16,16 +20,6 @@ export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
   historicalData: HistoricalData[] = [];
   isDescriptionOpen = false;
-
-
-
-  constructor(
-    private api: ApiService,
-    private route: ActivatedRoute,
-    private titleService: Title,
-    private metaService: Meta,
-    private spintax: SpintaxService // ✅ inyección del servicio
-  ) {}
 
   themeImages: { [key: string]: string } = {
     'Star Wars': 'assets/images/themes/star-wars.png',
@@ -63,6 +57,15 @@ export class ProductDetailComponent implements OnInit {
     'BrickHeadz': 'assets/images/themes/brickheadz.png'
   };
 
+  constructor(
+    private api: ApiService,
+    private route: ActivatedRoute,
+    private titleService: Title,
+    private metaService: Meta,
+    private spintax: SpintaxService,
+    private transferState: TransferState // Inyección para SEO
+  ) {}
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const slug = params.get('slug');
@@ -71,104 +74,122 @@ export class ProductDetailComponent implements OnInit {
         const legoId = parts[parts.length - 1];
         this.id = legoId;
 
-        this.loadProduct(legoId, slug);
-        this.getHistoricalData(legoId);
+        // Recuperamos del estado
+        const savedProduct = this.transferState.get(PRODUCT_KEY, null);
+        const savedHistory = this.transferState.get(HISTORY_KEY, null);
+
+        // ✅ Verificamos que savedProduct exista Y sea el que toca
+        if (savedProduct && savedProduct.legoId === legoId) {
+          this.product = savedProduct;
+          this.applyMetadata(this.product!, slug); // El '!' le dice a TS que estamos seguros de que no es null
+        } else {
+          this.loadProduct(legoId, slug);
+        }
+
+        if (savedHistory) {
+          this.historicalData = savedHistory;
+        } else {
+          this.getHistoricalData(legoId);
+        }
       }
     });
   }
 
-    toggleDescription() {
-      this.isDescriptionOpen = !this.isDescriptionOpen;
-    }
-
-
   loadProduct(id: string, slug: string): void {
     this.api.getProductById(id).subscribe(response => {
-      this.product = {
+      const productData = {
         ...response.set,
         precios: response.precios
       };
+      this.product = productData;
 
-      if (this.product) {
-        const setNumber = this.product.legoId || id;
-        const setName = this.product.name_es || this.product.name || 'LEGO Set';
-        const variables = { set_number: setNumber, set_name: setName };
-
-        // 🧠 Plantillas Spintax
-        const titleTemplate =
-          'LEGO {{set_number}} {{set_name}} – {Compara precios y ahorra|Compara precios y ofertas|Encuentra el mejor precio|Ofertas y precios actualizados|Descubre las mejores ofertas} | Fandery';
-
-        const descriptionTemplate =
-          'LEGO {{set_number}} {{set_name}} {al mejor precio|con las mejores ofertas|a precio imbatible}. {Compara precios actualizados|Consulta precios verificados|Explora las mejores ofertas} en {tiendas oficiales|las principales tiendas|las mejores tiendas online} y {descubre las mejores promociones|ahorra con Fandery|encuentra tu mejor opción|no pagues de más con Fandery}.';
-
-        // 🪄 Generar textos deterministas
-        const metaTitle = this.spintax.generate(titleTemplate, variables, setNumber);
-        const metaDescription = this.spintax.generate(descriptionTemplate, variables, setNumber);
-
-        // ✅ Aplicar al documento
-        this.titleService.setTitle(metaTitle);
-        this.metaService.updateTag({ name: 'description', content: metaDescription });
-        this.metaService.updateTag({ property: 'og:title', content: metaTitle });
-        this.metaService.updateTag({ property: 'og:description', content: metaDescription });
-        this.metaService.updateTag({ property: 'og:image', content: this.product.image });
-        this.metaService.updateTag({ name: 'twitter:title', content: metaTitle });
-        this.metaService.updateTag({ name: 'twitter:description', content: metaDescription });
-        this.metaService.updateTag({ name: 'twitter:image', content: this.product.image });
-        this.addProductSchema(this.product, slug);
-      } else {
-        this.titleService.setTitle(`Detalle del producto | Fandery`);
-      }
+      this.transferState.set(PRODUCT_KEY, productData);
+      // ✅ Aquí ya estamos dentro del subscribe, el dato existe seguro
+      this.applyMetadata(productData, slug);
     });
+  }
+
+  toggleDescription() {
+    this.isDescriptionOpen = !this.isDescriptionOpen;
   }
 
   getHistoricalData(id: string): void {
     this.api.getHistoricalData(id).subscribe(response => {
       this.historicalData = response;
+      this.transferState.set(HISTORY_KEY, response);
     });
   }
 
-  addProductSchema(product: Product, slug:string): void {
-  if (!product) return;
+  applyMetadata(product: Product, slug: string): void {
+    if (!product) return;
 
-  let minPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
-  let maxPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
+    const setNumber = product.legoId || this.id;
+    const setName = product.name_es || product.name || 'LEGO Set';
+    const variables = { set_number: setNumber, set_name: setName };
 
-  product.precios?.forEach(p => {
-    if (p.price < minPrice) minPrice = p.price;
-    if (p.price > maxPrice) maxPrice = p.price;
-  });
+    const titleTemplate = 'LEGO {{set_number}} {{set_name}} – {Compara precios y ahorra|Compara precios y ofertas|Encuentra el mejor precio|Ofertas y precios actualizados|Descubre las mejores ofertas} | Fandery';
+    const descriptionTemplate = 'LEGO {{set_number}} {{set_name}} {al mejor precio|con las mejores ofertas|a precio imbatible}. {Compara precios actualizados|Consulta precios verificados|Explora las mejores ofertas} en {tiendas oficiales|las principales tiendas|las mejores tiendas online} y {descubre las mejores promociones|ahorra con Fandery|encuentra tu mejor opción|no pagues de más con Fandery}.';
 
-  const url = `https://www.fandery.com/sets/${slug}`;
+    const metaTitle = this.spintax.generate(titleTemplate, variables, setNumber);
+    const metaDescription = this.spintax.generate(descriptionTemplate, variables, setNumber);
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "@id": url,
-    "name": product.name_es || product.name || `LEGO Set ${this.id}`,
-    "description": product.description_es || `Descubre el set LEGO ${product.name_es || this.id}. Compara precios en tiendas oficiales.`,
-    "image": product.image,
-    "brand": {
-      "@type": "Brand",
-      "name": "LEGO"
-    },
-    "sku": product.legoId || this.id,
-    "url": url,
-    "category": product.theme || "Juguetes y juegos > Construcción > LEGO",
-    "offers": {
-      "@type": "AggregateOffer",
-      "url": url,
-      "priceCurrency": "EUR",
-      "lowPrice": minPrice || 0,
-      "highPrice": maxPrice || 0,
-      "offerCount": product.precios?.length || 1,
-      "availability": "https://schema.org/InStock"
+    this.titleService.setTitle(metaTitle);
+    this.metaService.updateTag({ name: 'description', content: metaDescription });
+    this.metaService.updateTag({ property: 'og:title', content: metaTitle });
+    this.metaService.updateTag({ property: 'og:description', content: metaDescription });
+    this.metaService.updateTag({ property: 'og:image', content: product.image });
+    this.metaService.updateTag({ name: 'twitter:title', content: metaTitle });
+    this.metaService.updateTag({ name: 'twitter:description', content: metaDescription });
+    this.metaService.updateTag({ name: 'twitter:image', content: product.image });
+
+    this.updateProductSchema(product, slug);
+  }
+
+  updateProductSchema(product: Product, slug: string): void {
+    if (!product) return;
+
+    // Eliminamos schema previo si existe para evitar duplicados
+    const oldScript = document.getElementById('product-schema');
+    if (oldScript) {
+      oldScript.remove();
     }
-  };
 
-  const script = document.createElement('script');
-  script.type = 'application/ld+json';
-  script.text = JSON.stringify(schema, null, 2);
-  document.head.appendChild(script);
-}
+    let minPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
+    let maxPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
 
+    product.precios?.forEach(p => {
+      if (p.price < minPrice) minPrice = p.price;
+      if (p.price > maxPrice) maxPrice = p.price;
+    });
+
+    const url = `https://www.fandery.com/sets/${slug}`;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "@id": url,
+      "name": product.name_es || product.name || `LEGO Set ${this.id}`,
+      "description": product.description_es || `Descubre el set LEGO ${product.name_es || this.id}. Compara precios en tiendas oficiales.`,
+      "image": product.image,
+      "brand": { "@type": "Brand", "name": "LEGO" },
+      "sku": product.legoId || this.id,
+      "url": url,
+      "category": product.theme || "Juguetes y juegos > Construcción > LEGO",
+      "offers": {
+        "@type": "AggregateOffer",
+        "url": url,
+        "priceCurrency": "EUR",
+        "lowPrice": minPrice || 0,
+        "highPrice": maxPrice || 0,
+        "offerCount": product.precios?.length || 1,
+        "availability": "https://schema.org/InStock"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.id = 'product-schema'; // ID único para limpieza
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(schema, null, 2);
+    document.head.appendChild(script);
+  }
 }
