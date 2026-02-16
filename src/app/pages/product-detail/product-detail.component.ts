@@ -66,27 +66,32 @@ export class ProductDetailComponent implements OnInit {
     private transferState: TransferState // Inyección para SEO
   ) {}
 
-  ngOnInit(): void {
+ ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const slug = params.get('slug');
       if (slug) {
         const parts = slug.split('-');
         const legoId = parts[parts.length - 1];
-        this.id = legoId;
 
-        // Recuperamos del estado
+        if (this.id !== legoId) {
+          this.transferState.remove(PRODUCT_KEY);
+          this.transferState.remove(HISTORY_KEY);
+          this.id = legoId;
+          this.product = null; 
+          this.historicalData = [];
+        }
+
         const savedProduct = this.transferState.get(PRODUCT_KEY, null);
         const savedHistory = this.transferState.get(HISTORY_KEY, null);
 
-        // ✅ Verificamos que savedProduct exista Y sea el que toca
         if (savedProduct && savedProduct.legoId === legoId) {
           this.product = savedProduct;
-          this.applyMetadata(this.product!, slug); // El '!' le dice a TS que estamos seguros de que no es null
+          this.applyMetadata(this.product!, slug);
         } else {
           this.loadProduct(legoId, slug);
         }
 
-        if (savedHistory) {
+        if (savedHistory && savedProduct && savedProduct.legoId === legoId) {
           this.historicalData = savedHistory;
         } else {
           this.getHistoricalData(legoId);
