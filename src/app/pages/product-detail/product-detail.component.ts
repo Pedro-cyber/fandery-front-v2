@@ -77,7 +77,7 @@ export class ProductDetailComponent implements OnInit {
           this.transferState.remove(PRODUCT_KEY);
           this.transferState.remove(HISTORY_KEY);
           this.id = legoId;
-          this.product = null; 
+          this.product = null;
           this.historicalData = [];
         }
 
