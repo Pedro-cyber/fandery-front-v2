@@ -46,27 +46,27 @@ export class ProductListComponent implements OnInit {
       const themeParam = params.get('theme');
       const newTheme = themeParam ? this.deslugify(themeParam) : '';
 
-      // 🔴 Si el tema ha cambiado, limpiamos el estado previo para forzar recarga
-      if (this.theme !== newTheme) {
-        this.transferState.remove(PRODUCTS_LIST_KEY);
-        this.theme = newTheme;
-      }
-
       this.route.queryParams.subscribe(queryParams => {
-        this.query = queryParams['q'] || '';
+        const newQuery = queryParams['q'] || '';
         const pageParam = +queryParams['page'];
         const filterParam = queryParams['filter'];
         const sortParam = queryParams['sort'];
 
+        if (this.theme !== newTheme || this.query !== newQuery) {
+          this.transferState.remove(PRODUCTS_LIST_KEY);
+          this.productos = [];
+        }
+
+        this.theme = newTheme;
+        this.query = newQuery;
         this.currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
         this.filter = filterParam === 'offers' ? 'offers' : 'all';
         this.sortOrder = sortParam || 'discountDesc';
 
-        // --- LÓGICA DE HIDRATACIÓN CORREGIDA ---
+        // --- LÓGICA DE HIDRATACIÓN ---
         const savedProducts = this.transferState.get(PRODUCTS_LIST_KEY, null);
 
         if (savedProducts && savedProducts.length > 0) {
-          // Solo usamos el caché si los productos corresponden a lo que buscamos
           this.productos = savedProducts;
           this.applyFilterAndPagination();
           this.updateMetaLogic();
@@ -74,7 +74,6 @@ export class ProductListComponent implements OnInit {
           this.loadData();
         }
 
-        // Cargar lista de themes (esta sí puede ser global)
         const savedThemes = this.transferState.get(THEMES_KEY, null);
         if (savedThemes) {
           this.themes = savedThemes;
