@@ -1,9 +1,7 @@
 <div class="product-detail-description">
 
   <!-- ✅ Descripcion -->
-  <div class="description">
-    <p>{{ product.description_es }}</p>
-  </div>
+    <div class="description" [innerHTML]="product.description_es"></div>
   <!-- ✅ Piezas / Link a Brickset -->
   <div class="bricksetURL">
     <p>{{ product.pieces }} piezas | Más info en
