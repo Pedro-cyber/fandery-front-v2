@@ -2,14 +2,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 1rem;
 }
 
-.product-detail-description .bricksetURL a {
+ .bricksetURL a {
   text-decoration: none;
-  color:  #d32f2f;
+  color:  #ffc107;
 }
 
-.product-detail-description p {
-  font-size: 0.9rem;
-}
