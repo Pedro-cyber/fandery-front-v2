@@ -4,6 +4,18 @@
   padding: 0.5rem;
 }
 
+.product-detail-analytics-block {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+.product-detail-analytics-block {
+  flex-direction: row;
+}
+
+}
+
 .product-detail-analytics > div {
   display: flex;
   justify-content: space-between;

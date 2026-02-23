@@ -9,15 +9,17 @@ export const config: ScullyConfig = {
   distFolder: './dist/fandery', // output directory of your Angular build artifacts
   outDir: './dist/static', // directory for scully build artifacts
   defaultPostRenderers: ['addCanonical'],
-  maxRenderThreads: 4,
+  maxRenderThreads: 2,
   routes: {
    '/sets/:slug': {
       type: 'data',
       waitForSelector: '.product-detail-container .product-detail-description',
+      renderTimeout: 10000
     },
     '/product-list/theme/:theme': {
       type: 'dataCategories',
       waitForSelector: '.card',
+      renderTimeout: 10000
     },
   }
 };

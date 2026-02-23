@@ -1,14 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { Product } from '../../models/product.model';
 import { HistoricalData } from 'src/app/models/historical-data';
-import { Title, Meta, TransferState, makeStateKey } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { SpintaxService } from '../../services/spintax.service';
+import { TransferStateService } from '@scullyio/ng-lib';
+import SwiperCore, { Navigation, Pagination, Autoplay, Lazy } from 'swiper';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-// Definición de llaves para TransferState
-const PRODUCT_KEY = makeStateKey<any>('productData');
-const HISTORY_KEY = makeStateKey<any>('historyData');
+SwiperCore.use([Navigation, Pagination, Autoplay, Lazy]);
 
 @Component({
   selector: 'app-product-detail',
@@ -20,6 +23,8 @@ export class ProductDetailComponent implements OnInit {
   product: Product | null = null;
   historicalData: HistoricalData[] = [];
   isDescriptionOpen = false;
+  relatedProducts: Product[] = [];
+  isBrowser: boolean;
 
   themeImages: { [key: string]: string } = {
     'Star Wars': 'assets/images/themes/star-wars.png',
@@ -63,10 +68,13 @@ export class ProductDetailComponent implements OnInit {
     private titleService: Title,
     private metaService: Meta,
     private spintax: SpintaxService,
-    private transferState: TransferState // Inyección para SEO
-  ) {}
+    private transferState: TransferStateService,
+    @Inject(PLATFORM_ID) private platformId: any
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
- ngOnInit(): void {
+  ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const slug = params.get('slug');
       if (slug) {
@@ -74,26 +82,10 @@ export class ProductDetailComponent implements OnInit {
         const legoId = parts[parts.length - 1];
 
         if (this.id !== legoId) {
-          this.transferState.remove(PRODUCT_KEY);
-          this.transferState.remove(HISTORY_KEY);
           this.id = legoId;
           this.product = null;
           this.historicalData = [];
-        }
-
-        const savedProduct = this.transferState.get(PRODUCT_KEY, null);
-        const savedHistory = this.transferState.get(HISTORY_KEY, null);
-
-        if (savedProduct && savedProduct.legoId === legoId) {
-          this.product = savedProduct;
-          this.applyMetadata(this.product!, slug);
-        } else {
           this.loadProduct(legoId, slug);
-        }
-
-        if (savedHistory && savedProduct && savedProduct.legoId === legoId) {
-          this.historicalData = savedHistory;
-        } else {
           this.getHistoricalData(legoId);
         }
       }
@@ -101,28 +93,50 @@ export class ProductDetailComponent implements OnInit {
   }
 
   loadProduct(id: string, slug: string): void {
-    this.api.getProductById(id).subscribe(response => {
-      const productData = {
+    // Scully necesita el observable directamente para poder guardarlo en el JSON
+    const productObservable = this.api.getProductById(id).pipe(
+      map(response => ({
         ...response.set,
         precios: response.precios
-      };
-      this.product = productData;
+      }))
+    );
 
-      this.transferState.set(PRODUCT_KEY, productData);
-      // ✅ Aquí ya estamos dentro del subscribe, el dato existe seguro
-      this.applyMetadata(productData, slug);
-    });
+    this.transferState.useScullyTransferState('productData', productObservable as any)
+      .subscribe((product: any) => {
+        if (product) {
+          this.product = product as Product;
+          this.applyMetadata(this.product, slug);
+          this.loadRelatedProducts(this.product.theme);
+        }
+      });
+  }
+
+  getHistoricalData(id: string): void {
+    const historyObservable = this.api.getHistoricalData(id);
+
+    this.transferState.useScullyTransferState('historyData', historyObservable as any)
+      .subscribe((history: any) => {
+        if (history) {
+          this.historicalData = history as HistoricalData[];
+        }
+      });
+  }
+
+  loadRelatedProducts(theme: string): void {
+    const relatedObservable = this.api.searchByTheme(theme).pipe(
+      map(response => response.filter((p: Product) => p.legoId !== this.id).slice(0, 8))
+    );
+
+    this.transferState.useScullyTransferState('relatedProducts', relatedObservable as any)
+      .subscribe((related: any) => {
+        if (related) {
+          this.relatedProducts = related as Product[];
+        }
+      });
   }
 
   toggleDescription() {
     this.isDescriptionOpen = !this.isDescriptionOpen;
-  }
-
-  getHistoricalData(id: string): void {
-    this.api.getHistoricalData(id).subscribe(response => {
-      this.historicalData = response;
-      this.transferState.set(HISTORY_KEY, response);
-    });
   }
 
   applyMetadata(product: Product, slug: string): void {
@@ -132,8 +146,8 @@ export class ProductDetailComponent implements OnInit {
     const setName = product.name_es || product.name || 'LEGO Set';
     const variables = { set_number: setNumber, set_name: setName };
 
-    const titleTemplate = 'LEGO {{set_number}} {{set_name}} – {Compara precios y ahorra|Compara precios y ofertas|Encuentra el mejor precio|Ofertas y precios actualizados|Descubre las mejores ofertas} | Fandery';
-    const descriptionTemplate = 'LEGO {{set_number}} {{set_name}} {al mejor precio|con las mejores ofertas|a precio imbatible}. {Compara precios actualizados|Consulta precios verificados|Explora las mejores ofertas} en {tiendas oficiales|las principales tiendas|las mejores tiendas online} y {descubre las mejores promociones|ahorra con Fandery|encuentra tu mejor opción|no pagues de más con Fandery}.';
+    const titleTemplate = 'LEGO {{set_number}} {{set_name}} – {Compara precios y ahorra|Encuentra el mejor precio} | Fandery';
+    const descriptionTemplate = 'LEGO {{set_number}} {{set_name}} {al mejor precio|con las mejores ofertas}.';
 
     const metaTitle = this.spintax.generate(titleTemplate, variables, setNumber);
     const metaDescription = this.spintax.generate(descriptionTemplate, variables, setNumber);
@@ -141,23 +155,16 @@ export class ProductDetailComponent implements OnInit {
     this.titleService.setTitle(metaTitle);
     this.metaService.updateTag({ name: 'description', content: metaDescription });
     this.metaService.updateTag({ property: 'og:title', content: metaTitle });
-    this.metaService.updateTag({ property: 'og:description', content: metaDescription });
     this.metaService.updateTag({ property: 'og:image', content: product.image });
-    this.metaService.updateTag({ name: 'twitter:title', content: metaTitle });
-    this.metaService.updateTag({ name: 'twitter:description', content: metaDescription });
-    this.metaService.updateTag({ name: 'twitter:image', content: product.image });
 
-    this.updateProductSchema(product, slug);
+    if (this.isBrowser || typeof document !== 'undefined') {
+      this.updateProductSchema(product, slug);
+    }
   }
 
   updateProductSchema(product: Product, slug: string): void {
-    if (!product) return;
-
-    // Eliminamos schema previo si existe para evitar duplicados
     const oldScript = document.getElementById('product-schema');
-    if (oldScript) {
-      oldScript.remove();
-    }
+    if (oldScript) oldScript.remove();
 
     let minPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
     let maxPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
@@ -168,33 +175,28 @@ export class ProductDetailComponent implements OnInit {
     });
 
     const url = `https://www.fandery.com/sets/${slug}`;
-
     const schema = {
       "@context": "https://schema.org",
       "@type": "Product",
-      "@id": url,
       "name": product.name_es || product.name || `LEGO Set ${this.id}`,
-      "description": product.description_es || `Descubre el set LEGO ${product.name_es || this.id}. Compara precios en tiendas oficiales.`,
+      "description": product.description_es || '',
       "image": product.image,
       "brand": { "@type": "Brand", "name": "LEGO" },
       "sku": product.legoId || this.id,
-      "url": url,
-      "category": product.theme || "Juguetes y juegos > Construcción > LEGO",
       "offers": {
         "@type": "AggregateOffer",
-        "url": url,
         "priceCurrency": "EUR",
-        "lowPrice": minPrice || 0,
-        "highPrice": maxPrice || 0,
+        "lowPrice": minPrice,
+        "highPrice": maxPrice,
         "offerCount": product.precios?.length || 1,
         "availability": "https://schema.org/InStock"
       }
     };
 
     const script = document.createElement('script');
-    script.id = 'product-schema'; // ID único para limpieza
+    script.id = 'product-schema';
     script.type = 'application/ld+json';
-    script.text = JSON.stringify(schema, null, 2);
+    script.text = JSON.stringify(schema);
     document.head.appendChild(script);
   }
 }

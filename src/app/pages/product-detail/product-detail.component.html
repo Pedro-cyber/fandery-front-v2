@@ -26,20 +26,34 @@
 
         <div class="product-detail-container">
 
-          <!-- ========================= -->
-          <!-- ROW 1: IMAGE + DESCRIPTION (DESKTOP ONLY) -->
-          <!-- ========================= -->
-          <div class="row align-items-start">
+        <!-- ========================= -->
+        <!-- ROW 1: IMAGE + DESKTOP PRICES -->
+        <!-- ========================= -->
+        <div class="row">
 
-            <!-- IMAGE -->
-            <div class="col-12 d-flex justify-content-center">
-              <img
-                class="product-image img-fluid"
-                [src]="product.image"
-                [alt]="product.name_es || product.name" />
-            </div>
+          <!-- IMAGE -->
+          <div class="col-12 col-md-6 d-flex justify-content-center">
+            <img
+              class="product-image img-fluid"
+              [src]="product.image"
+              [alt]="product.name_es || product.name" />
+          </div>
+
+          <!-- DESKTOP: PRICE LIST + ALERT -->
+          <div class="col-md-6 prices-block d-none d-md-block">
+
+            <app-price-alert
+              [product]="product"
+              [modalId]="'price-alert-desktop-' + product.legoId">
+            </app-price-alert>
+
+            <app-product-detail-prices
+              [product]="product">
+            </app-product-detail-prices>
 
           </div>
+
+        </div>
 
           <!-- ========================= -->
           <!-- ROW 2: MOBILE PRICES -->
@@ -62,32 +76,17 @@
           </div>
 
           <!-- ========================= -->
-          <!-- ROW 4: DESKTOP ANALYTICS + PRICES -->
+          <!-- ROW 4: DESKTOP ANALYTICS -->
           <!-- ========================= -->
           <div class="row mt-4 d-none d-md-flex">
 
             <!-- DESKTOP: ANALYTICS -->
-            <section class="col-md-6 analytics-block">
+            <section class="col-12 analytics-block">
               <app-product-detail-analytics
                 [product]="product"
                 [historicalData]="historicalData">
               </app-product-detail-analytics>
             </section>
-
-            <!-- DESKTOP: PRICE LIST + ALERT -->
-            <div class="col-md-6 prices-block">
-
-            <app-price-alert
-              [product]="product"
-              [modalId]="'price-alert-desktop-' + product.legoId">
-            </app-price-alert>
-
-
-              <app-product-detail-prices
-                [product]="product">
-              </app-product-detail-prices>
-
-            </div>
           </div>
 
           <!-- ========================= -->
@@ -115,8 +114,36 @@
             </section>
           </div>
 
+
         </div>
+
       </div>
+      <!-- ========================= -->
+          <!-- RELATED PRODUCTS CAROUSEL -->
+          <!-- ========================= -->
+          <div class="row mt-5">
+            <section class="col-12 related-carousel-block">
+
+              <h2 class="mb-4">Te puede interesar</h2>
+              <swiper
+                [slidesPerView]="4"
+                [slidesPerGroup]="4"
+                [spaceBetween]="16"
+                [navigation]="true"
+                [loop]="false"
+                [breakpoints]="{
+                  '0': { slidesPerView: 1, slidesPerGroup: 1 },
+                  '768': { slidesPerView: 2, slidesPerGroup: 2 },
+                  '992': { slidesPerView: 4, slidesPerGroup: 4 }
+                }"
+              >
+                <ng-template swiperSlide *ngFor="let related of relatedProducts">
+                  <app-product-card [product]="related"></app-product-card>
+                </ng-template>
+              </swiper>
+
+            </section>
+          </div>
     </ng-container>
   </main>
 

@@ -87,7 +87,12 @@ registerLocaleData(localeEs, 'es');
     HttpClientModule,
     FormsModule,
     SwiperModule,
-    ScullyLibModule
+    // --- CAMBIO AQUÍ ---
+    ScullyLibModule.forRoot({
+      useTransferState: true,
+      alwaysMonitor: true
+    })
+    // -------------------
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'es' },
