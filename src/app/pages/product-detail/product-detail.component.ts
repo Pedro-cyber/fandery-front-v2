@@ -75,22 +75,20 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const slug = params.get('slug');
-      if (slug) {
-        const parts = slug.split('-');
-        const legoId = parts[parts.length - 1];
+  this.route.paramMap.subscribe(params => {
+    const slug = params.get('slug');
+    if (slug) {
+      const parts = slug.split('-');
+      const legoId = parts[parts.length - 1];
 
-        if (this.id !== legoId) {
-          this.id = legoId;
-          this.product = null;
-          this.historicalData = [];
-          this.loadProduct(legoId, slug);
-          this.getHistoricalData(legoId);
-        }
+      if (this.id !== legoId) {
+        this.id = legoId;
+        this.product = null;
+        this.loadProduct(legoId, slug);
       }
-    });
-  }
+    }
+  });
+}
 
   loadProduct(id: string, slug: string): void {
     // Scully necesita el observable directamente para poder guardarlo en el JSON
@@ -101,11 +99,12 @@ export class ProductDetailComponent implements OnInit {
       }))
     );
 
-    this.transferState.useScullyTransferState('productData', productObservable as any)
+    this.transferState.useScullyTransferState(`productData-${id}`, productObservable as any)
       .subscribe((product: any) => {
         if (product) {
           this.product = product as Product;
           this.applyMetadata(this.product, slug);
+          this.getHistoricalData(id);
           this.loadRelatedProducts(this.product.theme);
         }
       });
@@ -114,7 +113,7 @@ export class ProductDetailComponent implements OnInit {
   getHistoricalData(id: string): void {
     const historyObservable = this.api.getHistoricalData(id);
 
-    this.transferState.useScullyTransferState('historyData', historyObservable as any)
+    this.transferState.useScullyTransferState(`historyData-${id}`, historyObservable as any)
       .subscribe((history: any) => {
         if (history) {
           this.historicalData = history as HistoricalData[];
@@ -127,7 +126,7 @@ export class ProductDetailComponent implements OnInit {
       map(response => response.filter((p: Product) => p.legoId !== this.id).slice(0, 8))
     );
 
-    this.transferState.useScullyTransferState('relatedProducts', relatedObservable as any)
+    this.transferState.useScullyTransferState(`relatedProducts-${this.id}`, relatedObservable as any)
       .subscribe((related: any) => {
         if (related) {
           this.relatedProducts = related as Product[];

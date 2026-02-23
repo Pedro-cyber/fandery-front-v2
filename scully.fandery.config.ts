@@ -13,13 +13,12 @@ export const config: ScullyConfig = {
   routes: {
    '/sets/:slug': {
       type: 'data',
-      waitForSelector: '.product-detail-container .product-detail-description',
-      renderTimeout: 10000
+      waitForSelector: '.product-detail-container',
+      renderTimeout: 15000
     },
     '/product-list/theme/:theme': {
       type: 'dataCategories',
-      waitForSelector: '.card',
-      renderTimeout: 10000
+      waitForSelector: '.card'
     },
   }
 };
