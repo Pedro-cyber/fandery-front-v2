@@ -13,8 +13,8 @@ export const config: ScullyConfig = {
   routes: {
    '/sets/:slug': {
       type: 'data',
-      waitForSelector: '.product-detail-container',
-      renderTimeout: 15000
+      waitForSelector: '.main-product-container h1',
+      renderTimeout: 30000
     },
     '/product-list/theme/:theme': {
       type: 'dataCategories',

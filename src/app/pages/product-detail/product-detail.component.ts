@@ -9,9 +9,6 @@ import { SpintaxService } from '../../services/spintax.service';
 import { TransferStateService } from '@scullyio/ng-lib';
 import SwiperCore, { Navigation, Pagination, Autoplay, Lazy } from 'swiper';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-
-SwiperCore.use([Navigation, Pagination, Autoplay, Lazy]);
 
 @Component({
   selector: 'app-product-detail',
@@ -75,6 +72,10 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    if (this.isBrowser) {
+    SwiperCore.use([Navigation, Pagination, Autoplay, Lazy]);
+  }
   this.route.paramMap.subscribe(params => {
     const slug = params.get('slug');
     if (slug) {
