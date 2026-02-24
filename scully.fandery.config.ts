@@ -13,7 +13,9 @@ export const config: ScullyConfig = {
   routes: {
    '/sets/:slug': {
       type: 'data',
-      waitForSelector: '.main-product-container h1',
+      exposeToPage:{
+        manualIdle: true
+      },
       renderTimeout: 30000
     },
     '/product-list/theme/:theme': {

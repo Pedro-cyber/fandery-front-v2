@@ -6,7 +6,7 @@ import { Product } from '../../models/product.model';
 import { HistoricalData } from 'src/app/models/historical-data';
 import { Title, Meta } from '@angular/platform-browser';
 import { SpintaxService } from '../../services/spintax.service';
-import { TransferStateService } from '@scullyio/ng-lib';
+import { TransferStateService, IdleMonitorService } from '@scullyio/ng-lib';
 import SwiperCore, { Navigation, Pagination, Autoplay, Lazy } from 'swiper';
 import { map } from 'rxjs/operators';
 
@@ -66,6 +66,7 @@ export class ProductDetailComponent implements OnInit {
     private metaService: Meta,
     private spintax: SpintaxService,
     private transferState: TransferStateService,
+    private ims: IdleMonitorService,
     @Inject(PLATFORM_ID) private platformId: any
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -107,6 +108,12 @@ export class ProductDetailComponent implements OnInit {
           this.applyMetadata(this.product, slug);
           this.getHistoricalData(id);
           this.loadRelatedProducts(this.product.theme);
+
+          if (!this.isBrowser) {
+          setTimeout(() => {
+            this.ims.fireManualMyAppReadyEvent();
+          }, 500);
+        }
         }
       });
   }

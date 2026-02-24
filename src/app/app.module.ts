@@ -90,7 +90,8 @@ registerLocaleData(localeEs, 'es');
     // --- CAMBIO AQUÍ ---
     ScullyLibModule.forRoot({
       useTransferState: true,
-      alwaysMonitor: true
+      alwaysMonitor: true,
+      manualIdle: true,
     })
     // -------------------
   ],
