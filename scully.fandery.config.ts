@@ -9,7 +9,7 @@ export const config: ScullyConfig = {
   distFolder: './dist/fandery', // output directory of your Angular build artifacts
   outDir: './dist/static', // directory for scully build artifacts
   defaultPostRenderers: ['addCanonical'],
-  maxRenderThreads: 2,
+  maxRenderThreads: 1,
   routes: {
    '/sets/:slug': {
       type: 'data',

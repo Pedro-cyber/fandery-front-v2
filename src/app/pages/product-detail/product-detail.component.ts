@@ -103,16 +103,22 @@ export class ProductDetailComponent implements OnInit {
         of(product),
         this.api.searchByTheme(theme).pipe(
           map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8)),
-          catchError(() => of([]))
+            catchError(err => {
+              console.error('ERROR:', err);
+              throw err;
+            })
         ),
         this.api.getHistoricalData(id).pipe(
-          catchError(() => of([]))
+            catchError(err => {
+              console.error('ERROR:', err);
+              throw err;
+            })
         )
       ]);
     }),
     catchError(err => {
-      console.error('Error cargando datos del producto:', err);
-      return of([null, [], []]); // Mantiene la estructura para que el subscribe no rompa
+      console.error('ERROR:', err);
+      throw err;
     })
   ) as any;
 
@@ -149,15 +155,14 @@ export class ProductDetailComponent implements OnInit {
     this.api.searchByTheme(theme).pipe(
       map(res => res.filter((p: Product) => p.legoId !== this.id).slice(0, 8)),
       take(1),
-      catchError(() => of([]))
+        catchError(err => {
+          console.error('ERROR:', err);
+          throw err;
+        })
     ).subscribe(related => {
       this.relatedProducts = related;
       if (!this.isBrowser) this.cdr.detectChanges();
     });
-  }
-
-  toggleDescription() {
-    this.isDescriptionOpen = !this.isDescriptionOpen;
   }
 
   applyMetadata(product: Product, slug: string): void {
