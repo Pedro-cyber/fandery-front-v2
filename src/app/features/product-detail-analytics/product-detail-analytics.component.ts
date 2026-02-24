@@ -1,8 +1,9 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, Inject, PLATFORM_ID } from '@angular/core';
 import { Chart } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { Product } from 'src/app/models/product.model';
 import { HistoricalData } from 'src/app/models/historical-data';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-product-detail-analytics',
@@ -16,17 +17,24 @@ export class ProductDetailAnalyticsComponent implements AfterViewInit, OnChanges
 
   @ViewChild('priceChart') chartRef!: ElementRef<HTMLCanvasElement>;
   private chart!: Chart;
+  isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: any) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   get primerPrecio(): number | null {
     return this.product?.precios?.[0]?.price ?? null;
   }
 
   ngAfterViewInit() {
-    this.initChart();
+    if (this.isBrowser) {
+      this.initChart();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['historicalData'] && this.chart) {
+    if (this.isBrowser && changes['historicalData'] && this.chart) {
       this.updateChartData();
     }
   }
@@ -115,12 +123,12 @@ export class ProductDetailAnalyticsComponent implements AfterViewInit, OnChanges
     }
 
     this.chart.data.datasets[0].data = this.historicalData.map(d => ({
-      x: d.date.getTime(),
+      x: new Date(d.date).getTime(),
       y: d.bestPrice
     }));
 
     this.chart.data.datasets[1].data = this.historicalData.map(d => ({
-      x: d.date.getTime(),
+      x: new Date(d.date).getTime(),
       y: d.worstPrice
     }));
 

@@ -125,7 +125,7 @@
             <section class="col-12 related-carousel-block">
 
               <h2 class="mb-4">Te puede interesar</h2>
-              <swiper *ngIf="isBrowser"
+              <swiper *ngIf="isBrowser && relatedProducts?.length"
                 [slidesPerView]="4"
                 [slidesPerGroup]="4"
                 [spaceBetween]="16"

@@ -1,4 +1,4 @@
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
@@ -8,7 +8,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SpintaxService } from '../../services/spintax.service';
 import { TransferStateService, IdleMonitorService } from '@scullyio/ng-lib';
 import SwiperCore, { Navigation, Pagination, Autoplay, Lazy } from 'swiper';
-import { map } from 'rxjs/operators';
+import { map, take, catchError } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
@@ -19,8 +20,8 @@ export class ProductDetailComponent implements OnInit {
   id: string = '';
   product: Product | null = null;
   historicalData: HistoricalData[] = [];
-  isDescriptionOpen = false;
   relatedProducts: Product[] = [];
+  isDescriptionOpen = false;
   isBrowser: boolean;
 
   themeImages: { [key: string]: string } = {
@@ -67,79 +68,88 @@ export class ProductDetailComponent implements OnInit {
     private spintax: SpintaxService,
     private transferState: TransferStateService,
     private ims: IdleMonitorService,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: any
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-
     if (this.isBrowser) {
-    SwiperCore.use([Navigation, Pagination, Autoplay, Lazy]);
-  }
-  this.route.paramMap.subscribe(params => {
-    const slug = params.get('slug');
-    if (slug) {
-      const parts = slug.split('-');
-      const legoId = parts[parts.length - 1];
-
-      if (this.id !== legoId) {
-        this.id = legoId;
-        this.product = null;
-        this.loadProduct(legoId, slug);
-      }
+      SwiperCore.use([Navigation, Pagination, Autoplay, Lazy]);
     }
-  });
-}
 
-  loadProduct(id: string, slug: string): void {
-    // Scully necesita el observable directamente para poder guardarlo en el JSON
-    const productObservable = this.api.getProductById(id).pipe(
-      map(response => ({
-        ...response.set,
-        precios: response.precios
-      }))
+    this.route.paramMap.subscribe(params => {
+      const slug = params.get('slug');
+      if (slug) {
+        const parts = slug.split('-');
+        const legoId = parts[parts.length - 1];
+        if (this.id !== legoId) {
+          this.id = legoId;
+          this.loadProductData(legoId, slug);
+        }
+      }
+    });
+  }
+
+  loadProductData(id: string, slug: string): void {
+    // 1. Definimos los observables
+    const product$ = this.api.getProductById(id).pipe(
+      map(res => ({ ...res.set, precios: res.precios })),
+      catchError(() => of(null)),
+      take(1)
     );
 
-    this.transferState.useScullyTransferState(`productData-${id}`, productObservable as any)
-      .subscribe((product: any) => {
+    const history$ = this.api.getHistoricalData(id).pipe(
+      catchError(() => of([])),
+      take(1)
+    );
+
+    // 2. LA SOLUCIÓN: Forzamos 'as any' en el forkJoin para que Scully lo acepte
+    // sin pelearse por la versión de RxJS
+    const combined$ = forkJoin([product$, history$]) as any;
+
+    this.transferState.useScullyTransferState(
+      `allData-${id}`,
+      combined$
+    ).subscribe((data: any) => {
+      // Scully nos devuelve el array, lo extraemos con cuidado
+      if (data && Array.isArray(data)) {
+        const [product, history] = data;
+
         if (product) {
           this.product = product as Product;
+          this.historicalData = history as HistoricalData[];
+
           this.applyMetadata(this.product, slug);
-          this.getHistoricalData(id);
           this.loadRelatedProducts(this.product.theme);
 
           if (!this.isBrowser) {
-          setTimeout(() => {
-            this.ims.fireManualMyAppReadyEvent();
-          }, 500);
+            this.cdr.detectChanges();
+            setTimeout(() => {
+              this.ims.fireManualMyAppReadyEvent();
+            }, 100);
+          }
+        } else {
+          if (!this.isBrowser) this.ims.fireManualMyAppReadyEvent();
         }
-        }
-      });
+      } else {
+        // Fallback si la data no viene como array
+        if (!this.isBrowser) this.ims.fireManualMyAppReadyEvent();
+      }
+    });
   }
-
-  getHistoricalData(id: string): void {
-    const historyObservable = this.api.getHistoricalData(id);
-
-    this.transferState.useScullyTransferState(`historyData-${id}`, historyObservable as any)
-      .subscribe((history: any) => {
-        if (history) {
-          this.historicalData = history as HistoricalData[];
-        }
-      });
-  }
-
   loadRelatedProducts(theme: string): void {
-    const relatedObservable = this.api.searchByTheme(theme).pipe(
-      map(response => response.filter((p: Product) => p.legoId !== this.id).slice(0, 8))
-    );
-
-    this.transferState.useScullyTransferState(`relatedProducts-${this.id}`, relatedObservable as any)
-      .subscribe((related: any) => {
-        if (related) {
-          this.relatedProducts = related as Product[];
-        }
-      });
+    // Los relacionados no suelen ser críticos para el TransferState de la PDP
+    // pero los cargamos igualmente de forma eficiente
+    this.api.searchByTheme(theme).pipe(
+      map(res => res.filter((p: Product) => p.legoId !== this.id).slice(0, 8)),
+      take(1),
+      catchError(() => of([]))
+    ).subscribe(related => {
+      this.relatedProducts = related;
+      if (!this.isBrowser) this.cdr.detectChanges();
+    });
   }
 
   toggleDescription() {
@@ -148,7 +158,6 @@ export class ProductDetailComponent implements OnInit {
 
   applyMetadata(product: Product, slug: string): void {
     if (!product) return;
-
     const setNumber = product.legoId || this.id;
     const setName = product.name_es || product.name || 'LEGO Set';
     const variables = { set_number: setNumber, set_name: setName };
@@ -164,24 +173,15 @@ export class ProductDetailComponent implements OnInit {
     this.metaService.updateTag({ property: 'og:title', content: metaTitle });
     this.metaService.updateTag({ property: 'og:image', content: product.image });
 
-    if (this.isBrowser || typeof document !== 'undefined') {
+    if (!this.isBrowser) {
       this.updateProductSchema(product, slug);
     }
   }
 
   updateProductSchema(product: Product, slug: string): void {
-    const oldScript = document.getElementById('product-schema');
-    if (oldScript) oldScript.remove();
+    let minPrice = product.precios?.length ? Math.min(...product.precios.map(p => p.price)) : 0;
+    let maxPrice = product.precios?.length ? Math.max(...product.precios.map(p => p.price)) : 0;
 
-    let minPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
-    let maxPrice = product.precios && product.precios.length > 0 ? product.precios[0].price : 0;
-
-    product.precios?.forEach(p => {
-      if (p.price < minPrice) minPrice = p.price;
-      if (p.price > maxPrice) maxPrice = p.price;
-    });
-
-    const url = `https://www.fandery.com/sets/${slug}`;
     const schema = {
       "@context": "https://schema.org",
       "@type": "Product",

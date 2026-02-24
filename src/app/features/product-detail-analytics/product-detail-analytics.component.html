@@ -19,7 +19,11 @@
     </div>
   </div>
 
-  <div class="price-chart col-md-7">
+  <div class="price-chart col-md-7" *ngIf="isBrowser">
     <canvas #priceChart></canvas>
+  </div>
+
+  <div class="price-chart-placeholder col-md-7" *ngIf="!isBrowser">
+    <div class="loading-chart-msg">Cargando histórico de precios...</div>
   </div>
 </div>
