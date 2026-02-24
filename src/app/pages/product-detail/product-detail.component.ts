@@ -8,7 +8,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SpintaxService } from '../../services/spintax.service';
 import { TransferStateService, IdleMonitorService } from '@scullyio/ng-lib';
 import SwiperCore, { Navigation, Pagination, Autoplay, Lazy } from 'swiper';
-import { map, take, catchError } from 'rxjs/operators';
+import { map, take, catchError, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 
 @Component({
@@ -93,52 +93,56 @@ export class ProductDetailComponent implements OnInit {
   }
 
   loadProductData(id: string, slug: string): void {
-    // 1. Definimos los observables
-    const product$ = this.api.getProductById(id).pipe(
-      map(res => ({ ...res.set, precios: res.precios })),
-      catchError(() => of(null)),
-      take(1)
-    );
+  const combined$ = this.api.getProductById(id).pipe(
+    take(1),
+    switchMap(res => {
+      const product = { ...res.set, precios: res.precios };
+      const theme = product.theme || '';
 
-    const history$ = this.api.getHistoricalData(id).pipe(
-      catchError(() => of([])),
-      take(1)
-    );
+      return forkJoin([
+        of(product),
+        this.api.searchByTheme(theme).pipe(
+          map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8)),
+          catchError(() => of([]))
+        ),
+        this.api.getHistoricalData(id).pipe(
+          catchError(() => of([]))
+        )
+      ]);
+    }),
+    catchError(err => {
+      console.error('Error cargando datos del producto:', err);
+      return of([null, [], []]); // Mantiene la estructura para que el subscribe no rompa
+    })
+  ) as any;
 
-    // 2. LA SOLUCIÓN: Forzamos 'as any' en el forkJoin para que Scully lo acepte
-    // sin pelearse por la versión de RxJS
-    const combined$ = forkJoin([product$, history$]) as any;
+  this.transferState.useScullyTransferState(
+    `allData-${id}`,
+    combined$
+  ).subscribe((data: any) => {
+    if (Array.isArray(data)) {
+      const [product, related, history] = data;
 
-    this.transferState.useScullyTransferState(
-      `allData-${id}`,
-      combined$
-    ).subscribe((data: any) => {
-      // Scully nos devuelve el array, lo extraemos con cuidado
-      if (data && Array.isArray(data)) {
-        const [product, history] = data;
+      if (product) {
+        this.product = product;
+        this.relatedProducts = related || [];
+        this.historicalData = history || [];
 
-        if (product) {
-          this.product = product as Product;
-          this.historicalData = history as HistoricalData[];
+        this.applyMetadata(this.product!, slug);
 
-          this.applyMetadata(this.product, slug);
-          this.loadRelatedProducts(this.product.theme);
-
-          if (!this.isBrowser) {
-            this.cdr.detectChanges();
-            setTimeout(() => {
-              this.ims.fireManualMyAppReadyEvent();
-            }, 100);
-          }
-        } else {
-          if (!this.isBrowser) this.ims.fireManualMyAppReadyEvent();
+        if (!this.isBrowser) {
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.ims.fireManualMyAppReadyEvent();
+          }, 100);
         }
       } else {
-        // Fallback si la data no viene como array
         if (!this.isBrowser) this.ims.fireManualMyAppReadyEvent();
       }
-    });
-  }
+    }
+  });
+}
+
   loadRelatedProducts(theme: string): void {
     // Los relacionados no suelen ser críticos para el TransferState de la PDP
     // pero los cargamos igualmente de forma eficiente
