@@ -93,6 +93,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   loadProductData(id: string, slug: string): void {
+
   const combined$ = this.api.getProductById(id).pipe(
     take(1),
     switchMap(res => {
@@ -102,51 +103,44 @@ export class ProductDetailComponent implements OnInit {
       return forkJoin([
         of(product),
         this.api.searchByTheme(theme).pipe(
-          map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8)),
-            catchError(err => {
-              console.error('ERROR:', err);
-              throw err;
-            })
+          map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8))
         ),
-        this.api.getHistoricalData(id).pipe(
-            catchError(err => {
-              console.error('ERROR:', err);
-              throw err;
-            })
-        )
+        this.api.getHistoricalData(id)
       ]);
-    }),
-    catchError(err => {
-      console.error('ERROR:', err);
-      throw err;
     })
-  ) as any;
+  );
 
+  // 🔥 1️⃣ Scully / primera carga
   this.transferState.useScullyTransferState(
     `allData-${id}`,
-    combined$
-  ).subscribe((data: any) => {
-    if (Array.isArray(data)) {
-      const [product, related, history] = data;
+    combined$ as any
+  ).subscribe(([product, related, history]: any) => {
 
-      if (product) {
-        this.product = product;
-        this.relatedProducts = related || [];
-        this.historicalData = history || [];
+    this.product = product;
+    this.relatedProducts = related || [];
+    this.historicalData = history || [];
 
-        this.applyMetadata(this.product!, slug);
+    this.applyMetadata(this.product!, slug);
 
-        if (!this.isBrowser) {
-          this.cdr.detectChanges();
-          setTimeout(() => {
-            this.ims.fireManualMyAppReadyEvent();
-          }, 100);
-        }
-      } else {
-        if (!this.isBrowser) this.ims.fireManualMyAppReadyEvent();
-      }
+    if (!this.isBrowser) {
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.ims.fireManualMyAppReadyEvent();
+      }, 100);
     }
   });
+
+  // 🔥 2️⃣ SIEMPRE refrescar en navegador
+  if (this.isBrowser) {
+    combined$.subscribe(([product, related, history]: any) => {
+
+      this.product = product;
+      this.relatedProducts = related || [];
+      this.historicalData = history || [];
+
+      this.applyMetadata(this.product!, slug);
+    });
+  }
 }
 
   loadRelatedProducts(theme: string): void {
