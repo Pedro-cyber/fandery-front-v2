@@ -49,7 +49,6 @@ export class ProductDetailComponent implements OnInit {
     'Jurassic World': 'assets/images/themes/jurassic-world.png',
     'Botanicals': 'assets/images/themes/botanicals.png',
     'Wicked': 'assets/images/themes/wicked.png',
-    'Despicable Me': 'assets/images/themes/minions.png',
     'Fortnite': 'assets/images/themes/fortnite.png',
     'Architecture': 'assets/images/themes/architecture.png',
     'Ideas': 'assets/images/themes/ideas.png',
@@ -57,7 +56,10 @@ export class ProductDetailComponent implements OnInit {
     'Bluey': 'assets/images/themes/bluey.png',
     'One Piece': 'assets/images/themes/one-piece.png',
     'Monkie Kid': 'assets/images/themes/monkie-kid.png',
-    'BrickHeadz': 'assets/images/themes/brickheadz.png'
+    'BrickHeadz': 'assets/images/themes/brickheadz.png',
+    'Pokémon': 'assets/images/themes/pokemon.png',
+    'Editions': 'assets/images/themes/editions.png',
+    'Education': 'assets/images/themes/education.png'
   };
 
   constructor(

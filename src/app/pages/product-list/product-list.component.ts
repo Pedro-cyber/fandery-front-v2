@@ -44,7 +44,10 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const themeParam = params.get('theme');
-      const newTheme = themeParam ? this.deslugify(themeParam) : '';
+      var newTheme = themeParam ? this.deslugify(themeParam) : '';
+      if (newTheme == 'Pokemon') {
+        newTheme = 'Pokémon';
+      }
 
       this.route.queryParams.subscribe(queryParams => {
         const newQuery = queryParams['q'] || '';

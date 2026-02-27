@@ -42,7 +42,6 @@ export class HomeComponent implements OnInit {
     'Jurassic World': 'assets/images/themes/banner/jurassic-world-banner.webp',
     'Botanicals': 'assets/images/themes/banner/botanicals-banner.webp',
     'Wicked': 'assets/images/themes/banner/wicked-banner.webp',
-    'Despicable Me': 'assets/images/themes/banner/minions-banner.webp',
     'Fortnite': 'assets/images/themes/banner/fortnite-banner.webp',
     'Architecture': 'assets/images/themes/banner/architecture-banner.webp',
     'Ideas': 'assets/images/themes/banner/ideas-banner.webp',
@@ -50,7 +49,10 @@ export class HomeComponent implements OnInit {
     'Bluey': 'assets/images/themes/banner/bluey-banner.webp',
     'One Piece': 'assets/images/themes/banner/one-piece-banner.webp',
     'Monkie Kid': 'assets/images/themes/banner/monkie-kid-banner.webp',
-    'BrickHeadz': 'assets/images/themes/banner/brickheadz-banner.webp'
+    'BrickHeadz': 'assets/images/themes/banner/brickheadz-banner.webp',
+    'Pokémon': 'assets/images/themes/banner/pokemon-banner.jpg',
+    'Education': 'assets/images/themes/banner/education-banner.jpg',
+    'Editions': 'assets/images/themes/banner/editions-banner.jpg',
   };
 
   activeTab: 'search' | 'categories' = 'search';
