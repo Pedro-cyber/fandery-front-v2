@@ -7,6 +7,7 @@ export interface Product {
   image: string;
   image_thumbnail?: string;
   thumbnail?: string;
+  exitDate?: Date;
 
   mejorPrecio?: number;
   priceOriginal?: number;

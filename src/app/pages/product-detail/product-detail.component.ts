@@ -95,55 +95,52 @@ export class ProductDetailComponent implements OnInit {
   }
 
   loadProductData(id: string, slug: string): void {
-
   const combined$ = this.api.getProductById(id).pipe(
     take(1),
     switchMap(res => {
       const product = { ...res.set, precios: res.precios };
       const theme = product.theme || '';
-
       return forkJoin([
         of(product),
         this.api.searchByTheme(theme).pipe(
-          map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8))
+          map(list => list.filter((p: any) => p.legoId !== id).slice(0, 8)),
+          catchError(() => of([]))
         ),
-        this.api.getHistoricalData(id)
+        this.api.getHistoricalData(id).pipe(catchError(() => of([])))
       ]);
     })
   );
 
-  // 🔥 1️⃣ Scully / primera carga
-  this.transferState.useScullyTransferState(
-    `allData-${id}`,
-    combined$ as any
-  ).subscribe(([product, related, history]: any) => {
+  (this.transferState.useScullyTransferState(`allData-${id}`, combined$ as any) as any)
+    .pipe(take(1))
+    .subscribe(([product, related, history]: any) => {
+      this.setData(product, related, history, slug);
 
-    this.product = product;
-    this.relatedProducts = related || [];
-    this.historicalData = history || [];
-
-    this.applyMetadata(this.product!, slug);
-
-    if (!this.isBrowser) {
-      this.cdr.detectChanges();
-      setTimeout(() => {
+      if (!this.isBrowser) {
+        this.cdr.detectChanges();
         this.ims.fireManualMyAppReadyEvent();
-      }, 100);
-    }
-  });
+      }
+    });
 
-  // 🔥 2️⃣ SIEMPRE refrescar en navegador
+
   if (this.isBrowser) {
     combined$.subscribe(([product, related, history]: any) => {
-
-      this.product = product;
-      this.relatedProducts = related || [];
-      this.historicalData = history || [];
-
-      this.applyMetadata(this.product!, slug);
+      this.setData(product, related, history, slug);
     });
   }
 }
+
+  private setData(product: any, related: any, history: any, slug: string): void {
+    this.product = { ...product };
+    this.relatedProducts = related || [];
+    this.historicalData = history || [];
+    this.applyMetadata(this.product!, slug);
+
+    if (this.isBrowser) {
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    }
+  }
 
   loadRelatedProducts(theme: string): void {
     // Los relacionados no suelen ser críticos para el TransferState de la PDP

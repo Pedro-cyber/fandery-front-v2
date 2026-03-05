@@ -6,6 +6,9 @@
   <div class="pieces">
     <p>Número de piezas: {{ product.pieces }} </p>
   </div>
+  <div class="exitDate"  *ngIf="product.exitDate">
+    <p>Fecha probable de retirada: {{ product.exitDate | date:'dd/MM/yyyy'  }} </p>
+  </div>
   <div class="bricksetURL">
     <p>Más información en <a [href]="product.bricksetURL" target="_blank">Brickset</a> </p>
   </div>
