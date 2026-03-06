@@ -94,7 +94,8 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  loadProductData(id: string, slug: string): void {
+loadProductData(id: string, slug: string): void {
+  // 1. Definimos la fuente de verdad (Tu API)
   const combined$ = this.api.getProductById(id).pipe(
     take(1),
     switchMap(res => {
@@ -111,22 +112,22 @@ export class ProductDetailComponent implements OnInit {
     })
   );
 
-  (this.transferState.useScullyTransferState(`allData-${id}`, combined$ as any) as any)
-    .pipe(take(1))
-    .subscribe(([product, related, history]: any) => {
-      this.setData(product, related, history, slug);
-
-      if (!this.isBrowser) {
-        this.cdr.detectChanges();
-        this.ims.fireManualMyAppReadyEvent();
-      }
-    });
-
-
   if (this.isBrowser) {
+    // 🔥 EN EL NAVEGADOR: Ignoramos a Scully por completo.
+    // Esto obliga a Angular a hacer la petición HTTP real y traer precios frescos.
     combined$.subscribe(([product, related, history]: any) => {
       this.setData(product, related, history, slug);
     });
+  } else {
+    // ❄️ EN EL SERVIDOR (Build de Scully):
+    // Aquí SÍ usamos el TransferState para que el HTML generado tenga SEO (títulos, metas).
+    (this.transferState.useScullyTransferState(`allData-${id}`, combined$ as any) as any)
+      .pipe(take(1))
+      .subscribe(([product, related, history]: any) => {
+        this.setData(product, related, history, slug);
+        this.cdr.detectChanges();
+        this.ims.fireManualMyAppReadyEvent();
+      });
   }
 }
 
